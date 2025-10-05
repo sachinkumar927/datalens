@@ -18,7 +18,7 @@
 
 ## Demo
 
-![DataLens Screenshot](DataLensScreenshot.png)
+![DataLens Screenshot](assets/DataLensScreenShot.png)
 
 ---
 
