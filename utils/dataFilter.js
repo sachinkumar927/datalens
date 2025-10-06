@@ -1,4 +1,5 @@
-import { app, el } from "../index.js"
+import { app } from "../index.js";
+
 export function getFilteredSortedData() {
   let data = app.dataRaw.slice();
 
@@ -14,25 +15,26 @@ export function getFilteredSortedData() {
 
     // always normalize to Set
     const set = filterSet instanceof Set ? filterSet : new Set(filterSet);
-
     data = data.filter(row => {
       const v = row[col] ?? ""; // treat null/undefined as empty string
       return set.has(String(v));
     });
   }
 
-  // // Column input filters (startsWith search)
-  // for (const [col, q] of Object.entries(app.view.colInputFilters)) {
-  //   if (!q) continue;
-  //   const norm = q.toLowerCase();
-  //   data = data.filter(row => {
-  //     const val = row[col] ?? "";
-  //     return String(val).toLowerCase().startsWith(norm);
-  //   });
-  // }
+  // --- Column input filters (multi-column) ---
+  for (const [col, filterObj] of Object.entries(app.view.colFilters)) {
+    if (!filterObj) continue;
+    const input = filterObj.input?.trim().toLowerCase();
+    if (!input) continue;
 
-  // Global search across visible columns
-  const q = app.view.globalSearch.trim().toLowerCase();
+    data = data.filter(row => {
+      const val = row[col] ?? "";
+      return String(val).toLowerCase().includes(input);
+    });
+  }
+
+  // --- Global search ---
+  const q = app.view.globalSearch?.trim().toLowerCase();
   if (q) {
     data = data.filter(row => {
       return app.columns.some(c => {
@@ -43,13 +45,12 @@ export function getFilteredSortedData() {
     });
   }
 
-  // Sorting (multi-column)
+  // --- Sorting (multi-column) ---
   if (app.view.sorts && app.view.sorts.length) {
     data.sort((a, b) => {
       for (const s of app.view.sorts) {
         const av = a[s.col] ?? '';
         const bv = b[s.col] ?? '';
-        // numeric if both numeric
         const anum = parseFloat(av);
         const bnum = parseFloat(bv);
         let cmp = 0;
@@ -60,5 +61,6 @@ export function getFilteredSortedData() {
       return 0;
     });
   }
+
   return data;
 }

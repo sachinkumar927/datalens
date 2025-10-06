@@ -2,11 +2,12 @@ import { app, el, renderAll } from "../index.js";
 import { escapeHtml, unique } from "./common.js";
 import { getFilteredSortedData } from "./dataFilter.js";
 import { saveToStorage } from "./storage.js";
+
 export function renderTable() {
     el.tableBody.innerHTML = '';
     el.tableHead.innerHTML = '';
 
-    const data = getFilteredSortedData(app);
+    const data = getFilteredSortedData();
     const total = data.length;
 
     // Pagination
@@ -18,7 +19,6 @@ export function renderTable() {
 
     // --- Build header ---
     const headerRow = document.createElement('tr');
-    const filterRow = document.createElement('tr'); // for column filters
 
     app.columns.forEach(col => {
         if (app.view.hiddenCols.has(col)) return;
@@ -29,11 +29,11 @@ export function renderTable() {
         th.className = 'align-middle';
         th.style.cursor = 'pointer';
         th.tabIndex = 0;
-        th.setAttribute('role', 'columnheader');
         th.innerHTML = `<div class="d-flex align-items-center justify-content-between">
         <span class="col-title">${escapeHtml(col)}</span>
         <span class="col-sort ms-2 small text-muted"></span>
       </div>`;
+
         // Sorting
         th.addEventListener('click', () => toggleSort(col));
         th.addEventListener('keypress', (e) => { if (e.key === 'Enter') toggleSort(col); });
@@ -42,25 +42,9 @@ export function renderTable() {
         if (sortObj) th.querySelector('.col-sort').innerHTML = sortObj.dir === 'asc' ? '&#9650;' : '&#9660;';
 
         headerRow.appendChild(th);
-
-        // Filter input
-        const filterTh = document.createElement('th');
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.className = 'form-control form-control-sm';
-        input.placeholder = `Filter ${col}`;
-        input.value = app.view.colFilters[col]?.input || '';
-        input.addEventListener('input', (e) => {
-            if (!app.view.colFilters[col]) app.view.colFilters[col] = { input: '' };
-            app.view.colFilters[col].input = e.target.value;
-            renderTable();
-        });
-        filterTh.appendChild(input);
-        filterRow.appendChild(filterTh);
     });
 
     el.tableHead.appendChild(headerRow);
-    el.tableHead.appendChild(filterRow);
 
     // --- Build body ---
     const tbodyFrag = document.createDocumentFragment();
@@ -74,17 +58,12 @@ export function renderTable() {
             if (app.view.hiddenCols.has(col)) return;
 
             const td = document.createElement('td');
-            const v = row[col] === null || row[col] === undefined ? '' : row[col];
-
-            // Apply column filter
-            const filterVal = app.view.colFilters[col]?.input || '';
-            if (filterVal && !String(v).toLowerCase().includes(filterVal.toLowerCase())) return;
-
-            td.innerHTML = escapeHtml(String(v));
+            const val = row[col] ?? '';
+            td.textContent = val;
             tr.appendChild(td);
         });
 
-        if (tr.childElementCount > 0) tbodyFrag.appendChild(tr);
+        tbodyFrag.appendChild(tr);
     });
 
     el.tableBody.appendChild(tbodyFrag);
@@ -94,16 +73,9 @@ export function renderTable() {
     el.infoRows.textContent = total;
     el.infoCols.textContent = app.columns.length - app.view.hiddenCols.size;
 
-    // Table scroll shadow
-    const wrapper = document.querySelector('.table-wrapper');
-    const tableScroll = wrapper.querySelector('.table-responsive');
-    tableScroll.onscroll = () => wrapper.classList.toggle('scrolled', tableScroll.scrollTop > 10);
-
-    // Small-screen card view
-    renderCardView(pageData);
-
     saveToStorage(app);
 }
+
 
 export function renderCardView(pageData) {
     const container = document.querySelector('.card-view');

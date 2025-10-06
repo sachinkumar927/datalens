@@ -1,6 +1,6 @@
 /* Normal header cells (scroll away normally) */
 .table-responsive thead th {
-  background: #f8f9fa;
+  background: #dceaff; /* yellow header */
   z-index: 1;
 }
 
@@ -9,7 +9,6 @@
 .table-responsive td:first-child {
   position: sticky;
   left: 0;
-  background: #f1f1f1;
   z-index: 2;
 }
 
@@ -17,7 +16,6 @@
 .table-responsive thead th:first-child {
   position: sticky;
   top: 0;
-  left: 0;          /* because it's also first column */
-  background: #e9ecef;
-  z-index: 5;       /* highest so it stays on top */
+  left: 0;
+  z-index: 5; /* highest so it stays on top */
 }
