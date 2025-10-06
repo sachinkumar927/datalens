@@ -1,0 +1,23 @@
+/* Normal header cells (scroll away normally) */
+.table-responsive thead th {
+  background: #f8f9fa;
+  z-index: 1;
+}
+
+/* First column (cells) stays frozen horizontally */
+.table-responsive th:first-child,
+.table-responsive td:first-child {
+  position: sticky;
+  left: 0;
+  background: #f1f1f1;
+  z-index: 2;
+}
+
+/* ONLY the very first header cell freezes vertically */
+.table-responsive thead th:first-child {
+  position: sticky;
+  top: 0;
+  left: 0;          /* because it's also first column */
+  background: #e9ecef;
+  z-index: 5;       /* highest so it stays on top */
+}
