@@ -1,0 +1,922 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DataLens — Premium Data Explorer</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Icons & Fonts -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- AOS (Animate on Scroll) -->
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <link rel="stylesheet" href="table.css" />
+  <link rel="stylesheet" href="style.css" />
+  <!-- Animate.css for modal -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+  <!-- Styles -->
+  <style>
+    :root {
+      --primary: #0eb0e3;
+      --dark: #022260;
+      --glass: rgba(255, 255, 255, 0.65);
+      --muted: #6c757d;
+      --card-bg: #ffffff;
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      margin: 0px;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(180deg, #f3f8ff 0%, #eef6ff 100%);
+      color: #0b1b2b;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Container adjustments */
+    .app-container {
+      width: 100%;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    @media(min-width:768px) {
+      .header {
+        align-items: right !important;
+        justify-content: space-between;
+      }
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--dark), var(--primary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 18px;
+      box-shadow: 0 6px 18px rgba(14, 176, 227, 0.15);
+    }
+
+    .brand-title {
+      line-height: 1;
+    }
+
+    .brand-title .title-main {
+      font-weight: 700;
+      color: var(--dark);
+      font-size: 1.1rem;
+    }
+
+    .brand-title .title-sub {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Right controls */
+    .header-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .options-dropdown .dropdown-menu {
+      min-width: 200px;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid rgba(11, 27, 43, 0.06);
+    }
+
+    /* Main card (glass) */
+    .app-card {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.75));
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 12px 30px rgba(3, 17, 44, 0.06);
+      backdrop-filter: blur(6px);
+    }
+
+    /* Drop zone */
+    .drop-zone {
+      border-radius: 10px;
+      border: 2px dashed rgba(2, 34, 80, 0.08);
+      padding: 18px;
+      text-align: center;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.55));
+    }
+
+    .drop-zone.dragover {
+      background: linear-gradient(180deg, rgba(14, 176, 227, 0.06), rgba(14, 176, 227, 0.03));
+      border-color: rgba(14, 176, 227, 0.45)
+    }
+
+    /* Info badges */
+    .info-badge {
+      background: #fff;
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 6px 18px rgba(2, 34, 80, 0.04);
+    }
+
+    /* Table area */
+    .table-wrapper {
+      max-height: 48vh;
+      overflow: auto;
+      border-radius: 8px
+    }
+
+    table thead th {
+      position: sticky;
+      top: 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9));
+      z-index: 5
+    }
+
+    tbody tr:hover {
+      background: rgba(14, 176, 227, 0.04);
+      transform: translateY(-1px);
+      transition: all .12s
+    }
+
+    /* Card-view for mobile */
+    .card-view {
+      display: none
+    }
+
+    @media(max-width:767px) {
+      .table-responsive {
+        display: none
+      }
+
+      .card-view {
+        display: block
+      }
+    }
+
+    /* Controls */
+    .toolbar .form-control,
+    .toolbar .btn {
+      min-height: calc(1.5em + .75rem + 2px)
+    }
+
+    /* Chart container */
+    .chart-container {
+      height: 320px
+    }
+
+    /* Small helpers */
+    .muted {
+      color: var(--muted)
+    }
+
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word
+    }
+  </style>
+</head>
+
+<body>
+
+
+  <!-- Header -->
+  <div id="header"></div>
+  <div class="app-container mb-2">
+    <!-- Action Buttons Bar (not header) -->
+    <div class="container-fluid p-2">
+      <div
+        class="d-flex flex-wrap justify-content-end justify-content-sm-end justify-content-md-end justify-content-lg-end gap-2">
+
+        <!-- Dropdown -->
+        <div class="dropdown">
+          <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+            Options
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a class="dropdown-item" href="#" onclick="openTool('apiLens')">
+                <img src="https://cdn-icons-png.flaticon.com/512/2103/2103665.png" width="18" class="me-2">
+                API Lens
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" onclick="openTool('apiStudio')">
+                <img src="https://cdn-icons-png.flaticon.com/512/833/833314.png" width="18" class="me-2">
+                API Studio
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" onclick="openTool('apiExplorer')">
+                <img src="https://cdn-icons-png.flaticon.com/512/1828/1828970.png" width="18" class="me-2">
+                API Explorer
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" onclick="openTool('apiSandbox')">
+                <img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" width="18" class="me-2">
+                API Sandbox
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+          </ul>
+        </div>
+
+        <!-- Other buttons -->
+        <button class="btn btn-outline-secondary btn-sm" id="btnSample">
+          Load Sample
+        </button>
+
+        <button class="btn btn-outline-danger btn-sm" id="btnClearStorage">
+          Clear Data
+        </button>
+      </div>
+    </div>
+
+
+    <!-- Main Card -->
+    <div class="app-card">
+
+      <!-- Upload & File Info -->
+      <div class="row g-3 toolbar">
+        <div class="col-lg-5">
+          <label class="form-label">File type / Upload</label>
+          <div class="input-group">
+            <select id="fileType" class="form-select" aria-label="File type">
+              <option value="auto">Auto-Detect</option>
+              <option value="csv">CSV / TXT</option>
+              <option value="excel">Excel</option>
+              <option value="json">JSON</option>
+              <option value="xml">XML</option>
+            </select>
+            <input id="fileInput" type="file" class="form-control" accept=".csv,.txt,.json,.xlsx,.xls,.xml">
+          </div>
+
+          <div class="mt-3 drop-zone" id="dropZone" tabindex="0">
+            <img src="https://undraw.co/api/illustrations/undraw_upload_re_pasx.svg" alt=""
+              style="max-height:90px;opacity:0.95">
+            <p class="mb-0 mt-2">Drag & drop file here — or click to browse</p>
+            <small class="muted">Supports CSV, XLSX, JSON, TXT, XML</small>
+          </div>
+        </div>
+
+        <div class="col-lg-7">
+          <label class="form-label">File & Data Info</label>
+          <div class="d-flex flex-wrap gap-2 mb-2">
+            <div class="info-badge flex-grow-1">
+              <div><strong id="infoFilename">No file</strong></div>
+              <div class="small muted" id="infoMIME">—</div>
+            </div>
+            <div class="info-badge text-center" style="min-width:88px;">
+              <div class="small muted">Size</div>
+              <div id="infoSize">—</div>
+            </div>
+            <div class="info-badge text-center" style="min-width:88px;">
+              <div class="small muted">Rows</div>
+              <div id="infoRows">0</div>
+            </div>
+            <div class="info-badge text-center" style="min-width:88px;">
+              <div class="small muted">Columns</div>
+              <div id="infoCols">0</div>
+            </div>
+          </div>
+
+          <div class="d-flex flex-wrap gap-2 align-items-center">
+            <div class="form-check flex-grow-1">
+              <input class="form-check-input" type="checkbox" id="persistLocal">
+              <label class="form-check-label muted" for="persistLocal" title="Push Data To Local Storage">Persist data
+                in localStorage</label>
+            </div>
+
+            <button class="btn btn-outline-primary btn-sm" id="btnResetView">Reset view</button>
+            <button class="btn btn-success btn-sm" id="btnExportCSV"><i class="bi bi-file-earmark-spreadsheet"></i>
+              CSV</button>
+            <button class="btn btn-success btn-sm" id="btnExportXLSX"><i class="bi bi-file-earmark-excel"></i>
+              XLSX</button>
+            <button class="btn btn-outline-warning btn-sm" id="btnDownloadOriginal"><i
+                class="bi bi-download me-1"></i>Download Original</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search & Controls -->
+      <div class="row g-3 mt-3 align-items-center">
+        <div class="col-md-4">
+          <label class="form-label">Global search</label>
+          <input id="globalSearch" class="form-control" placeholder="Search across all columns">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Rows per page</label>
+          <select id="rowsPerPage" class="form-select">
+            <option>10</option>
+            <option>20</option>
+            <option>50</option>
+            <option>100</option>
+          </select>
+        </div>
+        <div class="col-md-5 d-flex gap-2 flex-wrap align-items-center">
+          <label class="form-label w-100 mb-0">Columns & Filters</label>
+          <div class="dropdown flex-grow-1">
+            <button class="btn btn-outline-secondary dropdown-toggle w-100" id="colsToggle"
+              data-bs-toggle="dropdown">Columns</button>
+            <div class="dropdown-menu p-3 cols-menu" id="colsList"></div>
+          </div>
+          <div class="dropdown flex-grow-1">
+            <button class="btn btn-outline-secondary dropdown-toggle w-100" id="filtersToggle"
+              data-bs-toggle="dropdown">Column filters</button>
+            <div class="dropdown-menu p-3" id="colFilters"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table / Card view -->
+      <div class="table-wrapper mt-3 border rounded-2 p-0">
+        <div class="table-responsive m-2">
+          <table id="dataTable" class="table table-hover table-striped align-middle mb-0">
+            <thead id="tableHead"></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+
+        <div class="card-view p-2"></div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <small id="pageInfo" class="muted">Showing 0 of 0</small>
+        <nav>
+          <ul class="pagination mb-0" id="pagination"></ul>
+        </nav>
+      </div>
+
+      <!-- Quick Chart -->
+      <hr>
+      <div class="d-flex flex-column flex-md-row gap-2 align-items-start align-items-md-center mb-2">
+        <div>
+          <h6 class="mb-0">Quick Chart</h6>
+          <small class="muted">Choose categorical & numeric column</small>
+        </div>
+        <div class="ms-md-auto d-flex flex-wrap gap-2 align-items-center">
+          <select id="chartType" class="form-select form-select-sm" style="width:110px;">
+            <option value="bar">Bar</option>
+            <option value="line">Line</option>
+            <option value="pie">Pie</option>
+          </select>
+          <select id="chartCat" class="form-select form-select-sm" style="width:150px;"></select>
+          <select id="chartNum" class="form-select form-select-sm" style="width:150px;"></select>
+          <button class="btn btn-primary btn-sm" id="btnDrawChart">Draw</button>
+        </div>
+      </div>
+      <div class="chart-container mt-3"><canvas id="chartCanvas"></canvas></div>
+
+    </div> <!-- /app-card -->
+
+    <!-- notifications -->
+    <div id="notif" class="position-fixed bottom-0 end-0 p-3" style="z-index:1050"></div>
+
+  </div> <!-- /app-container -->
+  <!-- Footer -->
+  <div id="footer"></div>
+  <div id="guide"></div>
+
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <script>
+    AOS.init({ duration: 800, once: true });
+
+    // Utilities
+    const el = id => document.getElementById(id);
+    const formatBytes = bytes => {
+      if (!bytes) return '—';
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(1024));
+      return (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + sizes[i];
+    }
+
+    // App state
+    let dataRaw = []; // array of objects
+    let dataColumns = [];
+    let originalFile = null; // store File
+    let currentPage = 1;
+    let perPage = Number(el('rowsPerPage').value || 10);
+    let filters = {};
+    let colVisibility = {};
+
+    // Elements
+    const dropZone = el('dropZone');
+    const fileInput = el('fileInput');
+    const infoFilename = el('infoFilename');
+    const infoMIME = el('infoMIME');
+    const infoSize = el('infoSize');
+    const infoRows = el('infoRows');
+    const infoCols = el('infoCols');
+    const tableHead = el('tableHead');
+    const tableBody = el('tableBody');
+    const colsList = el('colsList');
+    const colFilters = el('colFilters');
+    const globalSearch = el('globalSearch');
+    const rowsPerPage = el('rowsPerPage');
+    const pageInfo = el('pageInfo');
+    const pagination = el('pagination');
+    const chartCat = el('chartCat');
+    const chartNum = el('chartNum');
+    const chartCanvas = document.getElementById('chartCanvas').getContext('2d');
+
+    let chartInstance = null;
+
+    // Load sample dataset (CSV) — small demo
+    document.getElementById('btnSample').addEventListener('click', async () => {
+      const url = 'SampleDataset.csv';
+      showNotif('Loading sample dataset...');
+      try {
+        const res = await fetch(url);
+        const txt = await res.text();
+        parseCSVString(txt, 'iris.csv', new Blob([txt], { type: 'text/csv' }));
+        showNotif('Sample loaded', 'success');
+      } catch (e) { showNotif('Failed to load sample', 'danger'); }
+    });
+
+    // Clear storage
+    document.getElementById('btnClearStorage').addEventListener('click', () => {
+      localStorage.removeItem('datalens_data');
+      showNotif('Local storage cleared', 'info');
+    });
+
+    // Reset view
+    document.getElementById('btnResetView').addEventListener('click', () => {
+      filters = {};
+      colVisibility = {};
+      globalSearch.value = '';
+      rowsPerPage.value = 10;
+      renderTable();
+    });
+
+    // Exports
+    document.getElementById('btnExportCSV').addEventListener('click', exportCSV);
+    document.getElementById('btnExportXLSX').addEventListener('click', exportXLSX);
+    document.getElementById('btnDownloadOriginal').addEventListener('click', () => {
+      if (!originalFile) { showNotif('No original file to download', 'warning'); return; }
+      const url = URL.createObjectURL(originalFile);
+      const a = document.createElement('a'); a.href = url; a.download = originalFile.name; a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Persist toggle
+    el('persistLocal').addEventListener('change', (e) => {
+      if (e.target.checked) saveToLocal();
+      else localStorage.removeItem('datalens_data');
+    });
+
+    // File input
+    fileInput.addEventListener('change', e => {
+      const f = e.target.files[0];
+      if (!f) return;
+      handleFile(f);
+    });
+
+    // Drag & drop
+    ['dragenter', 'dragover'].forEach(evt => {
+      dropZone.addEventListener(evt, (e) => {
+        e.preventDefault(); e.stopPropagation();
+        dropZone.classList.add('dragover');
+      });
+    });
+    ['dragleave', 'drop'].forEach(evt => {
+      dropZone.addEventListener(evt, (e) => {
+        e.preventDefault(); e.stopPropagation();
+        dropZone.classList.remove('dragover');
+      });
+    });
+    dropZone.addEventListener('drop', (e) => {
+      const f = e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f) handleFile(f);
+    });
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    // Global search/pagination change
+    globalSearch.addEventListener('input', () => { currentPage = 1; renderTable(); });
+    rowsPerPage.addEventListener('change', () => { perPage = Number(rowsPerPage.value); currentPage = 1; renderTable(); });
+
+    // Chart draw
+    el('btnDrawChart').addEventListener('click', drawChart);
+
+    // Helpers: notifications
+    function showNotif(msg, type = 'info', timeout = 2500) {
+      const id = 'n' + Date.now();
+      const div = document.createElement('div');
+      div.id = id;
+      div.className = `toast align-items-center text-bg-${type} border-0`;
+      div.role = 'alert';
+      div.innerHTML = `<div class="d-flex"><div class="toast-body small">${msg}</div><button class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button></div>`;
+      document.getElementById('notif').appendChild(div);
+      const t = new bootstrap.Toast(div);
+      t.show();
+      if (timeout) setTimeout(() => t.hide(), timeout);
+    }
+
+    // Handle file
+    async function handleFile(file) {
+      originalFile = file;
+      infoFilename.textContent = file.name;
+      infoMIME.textContent = file.type || '—';
+      infoSize.textContent = formatBytes(file.size);
+
+      const ext = file.name.split('.').pop().toLowerCase();
+      if (ext === 'csv' || ext === 'txt') {
+        const text = await file.text();
+        parseCSVString(text, file.name, file);
+      } else if (ext === 'json') {
+        const text = await file.text();
+        try {
+          const parsed = JSON.parse(text);
+          parseJSONData(parsed, file.name, file);
+        } catch (e) { showNotif('Invalid JSON file', 'danger'); }
+      } else if (ext === 'xlsx' || ext === 'xls') {
+        readExcel(file);
+      } else if (ext === 'xml') {
+        const text = await file.text();
+        // basic xml -> convert to objects (simple)
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(text, "application/xml");
+        // try to convert top-level children into array of objects
+        const rows = Array.from(xmlDoc.documentElement.children).map(node => {
+          const obj = {};
+          Array.from(node.children).forEach(c => obj[c.tagName] = c.textContent);
+          return obj;
+        });
+        parseJSONData(rows, file.name, file);
+      } else {
+        showNotif('Unsupported file type', 'warning');
+      }
+    }
+
+    // CSV parsing from string
+    function parseCSVString(txt, name, fileRef) {
+      Papa.parse(txt, {
+        header: true, skipEmptyLines: true, dynamicTyping: false, complete: function (res) {
+          dataRaw = res.data;
+          originalFile = fileRef;
+          postParse(name);
+        }
+      });
+    }
+
+    // read Excel
+    function readExcel(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = e.target.result;
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const json = XLSX.utils.sheet_to_json(firstSheet, { defval: null });
+        dataRaw = json;
+        postParse(file.name);
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    // Parse JSON data (array or object)
+    function parseJSONData(parsed, name, fileRef) {
+      if (Array.isArray(parsed)) {
+        dataRaw = parsed.map(item => flattenObject(item));
+      } else if (typeof parsed === 'object' && parsed !== null) {
+        // Try to find the largest array inside object
+        const arrays = Object.values(parsed).filter(v => Array.isArray(v));
+
+        if (arrays.length) {
+          // Flatten each item inside the largest array
+          const largest = arrays.reduce((a, b) => a.length > b.length ? a : b, arrays[0]);
+          dataRaw = largest.map(item => flattenObject(item));
+        } else {
+          dataRaw = [flattenObject(parsed)];
+        }
+      } else {
+        dataRaw = [];
+      }
+
+      originalFile = fileRef;
+      postParse(name);
+    }
+
+    // Flatten JSON Object deeply (supports arrays and nested objects)
+    function flattenObject(obj, parentKey = '', res = {}) {
+      if (Array.isArray(obj)) {
+        obj.forEach((item, index) => {
+          const newKey = parentKey ? `${parentKey}.${index}` : `${index}`;
+          if (typeof item === 'object' && item !== null) {
+            flattenObject(item, newKey, res);
+          } else {
+            res[newKey] = item;
+          }
+        });
+      } else if (typeof obj === 'object' && obj !== null) {
+        Object.keys(obj).forEach(key => {
+          const newKey = parentKey ? `${parentKey}.${key}` : key;
+          if (typeof obj[key] === 'object' && obj[key] !== null) {
+            flattenObject(obj[key], newKey, res);
+          } else {
+            res[newKey] = obj[key];
+          }
+        });
+      } else {
+        res[parentKey] = obj;
+      }
+      return res;
+    }
+
+
+    // After parsing: set columns & render
+    function postParse(name) {
+      dataColumns = (dataRaw.length && typeof dataRaw[0] === 'object') ? Object.keys(dataRaw[0]) : [];
+      infoRows.textContent = dataRaw.length || 0;
+      infoCols.textContent = dataColumns.length || 0;
+      if (el('persistLocal').checked) saveToLocal();
+      currentPage = 1;
+      buildColsList();
+      buildFiltersPanel();
+      renderTable();
+      populateChartSelects();
+    }
+
+    // Build columns dropdown (visibility toggles)
+    function buildColsList() {
+      colsList.innerHTML = '';
+      dataColumns.forEach(col => {
+        const id = 'col_' + col.replace(/\s+/g, '_');
+        const div = document.createElement('div');
+        div.className = 'form-check';
+        div.innerHTML = `<input class="form-check-input" type="checkbox" id="${id}" checked>
+                         <label class="form-check-label" for="${id}">${col}</label>`;
+        colsList.appendChild(div);
+        el(id).addEventListener('change', (e) => {
+          colVisibility[col] = !e.target.checked; // unchecked -> hidden
+          renderTable();
+        });
+      });
+    }
+
+    // Build column filters (simple unique value filter)
+    function buildFiltersPanel() {
+      colFilters.innerHTML = '';
+      dataColumns.forEach(col => {
+        const values = Array.from(new Set(dataRaw.map(r => r[col]).filter(v => v != null))).slice(0, 50);
+        if (!values.length) return;
+        const container = document.createElement('div');
+        container.className = 'mb-2';
+        container.innerHTML = `<label class="form-label small mb-1">${col}</label>
+          <select class="form-select form-select-sm" data-col="${col}">
+            <option value="">— All —</option>
+            ${values.map(v => `<option value="${escapeHtml(String(v))}">${escapeHtml(String(v))}</option>`).join('')}
+          </select>`;
+        colFilters.appendChild(container);
+        container.querySelector('select').addEventListener('change', (e) => {
+          const colName = e.target.getAttribute('data-col');
+          const v = e.target.value;
+          if (v) filters[colName] = v; else delete filters[colName];
+          currentPage = 1; renderTable();
+        });
+      });
+    }
+
+    // Render table with pagination & filtering
+    function renderTable() {
+      // columns visible array
+      const visibleCols = dataColumns.filter(c => !colVisibility[c]);
+
+      // filtered data
+      let filtered = dataRaw.slice();
+      // apply column filters
+      Object.keys(filters).forEach(k => {
+        filtered = filtered.filter(r => String(r[k]) === filters[k]);
+      });
+      // global search
+      const q = (globalSearch.value || '').toLowerCase().trim();
+      if (q) {
+        filtered = filtered.filter(r => visibleCols.some(c => String(r[c] || '').toLowerCase().includes(q)));
+      }
+
+      const total = filtered.length;
+      const per = perPage = Number(rowsPerPage.value || perPage || 10);
+      const totalPages = Math.max(1, Math.ceil(total / per));
+      if (currentPage > totalPages) currentPage = totalPages;
+      const start = (currentPage - 1) * per;
+      const pageData = filtered.slice(start, start + per);
+
+      // header
+      tableHead.innerHTML = '<tr>' + visibleCols.map(c => `<th>${escapeHtml(c)}</th>`).join('') + '</tr>';
+      // body
+      tableBody.innerHTML = pageData.map(row => {
+        return '<tr>' + visibleCols.map(c => `<td>${escapeHtml(formatCell(row[c]))}</td>`).join('') + '</tr>';
+      }).join('');
+
+      // page info & pagination
+      pageInfo.textContent = `Showing ${Math.min(total, start + 1)} - ${Math.min(total, start + per)} of ${total}`;
+      renderPagination(totalPages);
+    }
+
+    function renderPagination(totalPages) {
+      const pagination = document.getElementById('pagination');
+      const pageInfo = document.getElementById('pageInfo');
+      pagination.innerHTML = '';
+
+      if (totalPages <= 1) {
+        pageInfo.textContent = `Showing page ${currentPage} of ${totalPages}`;
+        return;
+      }
+
+      const makePage = (n, label = n, active = false, disabled = false) => `
+    <li class="page-item ${active ? 'active' : ''} ${disabled ? 'disabled' : ''}">
+      <a class="page-link" href="#" data-page="${n}">${label}</a>
+    </li>
+  `;
+
+      let pages = [];
+
+      // « (First)
+      pages.push(makePage(1, '&laquo;', false, currentPage === 1));
+
+      // ‹ (Previous)
+      pages.push(makePage(currentPage - 1, '&lsaquo;', false, currentPage === 1));
+
+      // Current Page Indicator
+      pages.push(makePage(currentPage, currentPage, true));
+
+      // › (Next)
+      pages.push(makePage(currentPage + 1, '&rsaquo;', false, currentPage === totalPages));
+
+      // » (Last)
+      pages.push(makePage(totalPages, '&raquo;', false, currentPage === totalPages));
+
+      pagination.innerHTML = pages.join('');
+
+      // Add click events
+      pagination.querySelectorAll('a.page-link').forEach(a => {
+        a.addEventListener('click', e => {
+          e.preventDefault();
+          const page = Number(a.getAttribute('data-page'));
+          if (page >= 1 && page <= totalPages && page !== currentPage) {
+            currentPage = page;
+            renderTable(); // ⬅️ call your table rendering function
+          }
+        });
+      });
+
+      // Update info text
+      pageInfo.textContent = `Showing page ${currentPage} of ${totalPages}`;
+    }
+
+
+    // Populate chart select boxes
+    function populateChartSelects() {
+      chartCat.innerHTML = '<option value="">Select categorical</option>';
+      chartNum.innerHTML = '<option value="">Select numeric</option>';
+      dataColumns.forEach(c => {
+        // simple heuristic: numeric if > 50% values parse as number
+        const vals = dataRaw.map(r => r[c]).filter(v => v != null);
+        const numericRatio = vals.length ? vals.filter(v => !isNaN(Number(v))).length / vals.length : 0;
+        const option = `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`;
+        chartCat.insertAdjacentHTML('beforeend', option);
+        if (numericRatio >= 0.5) chartNum.insertAdjacentHTML('beforeend', option);
+      });
+    }
+
+    // Draw chart using Chart.js
+    function drawChart() {
+      const cat = chartCat.value; const num = chartNum.value; const type = el('chartType').value;
+      if (!cat || !num) { showNotif('Select both categorical and numeric columns', 'warning'); return; }
+      // aggregate numeric by category (sum)
+      const agg = {};
+      dataRaw.forEach(r => {
+        const key = r[cat] ?? '—';
+        const val = Number(r[num]) || 0;
+        agg[key] = (agg[key] || 0) + val;
+      });
+      const labels = Object.keys(agg);
+      const values = Object.values(agg);
+
+      if (chartInstance) chartInstance.destroy();
+      chartInstance = new Chart(chartCanvas, {
+        type,
+        data: { labels, datasets: [{ label: num, data: values, tension: 0.3 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: type !== 'line' } } }
+      });
+      // scroll to chart
+      chartCanvas.canvas.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // Export CSV (visible rows)
+    function exportCSV() {
+      // use current filtered data (without pagination)
+      const visibleCols = dataColumns.filter(c => !colVisibility[c]);
+      let filtered = dataRaw.slice();
+      Object.keys(filters).forEach(k => filtered = filtered.filter(r => String(r[k]) === filters[k]));
+      const q = (globalSearch.value || '').toLowerCase().trim();
+      if (q) filtered = filtered.filter(r => visibleCols.some(c => String(r[c] || '').toLowerCase().includes(q)));
+      if (!filtered.length) { showNotif('No data to export', 'warning'); return; }
+
+      const csv = [visibleCols.join(',')].concat(filtered.map(r => visibleCols.map(c => `"${String(r[c] || '').replace(/"/g, '""')}"`).join(','))).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'datalens_export.csv'; a.click(); URL.revokeObjectURL(a.href);
+    }
+
+    // Export XLSX (visible rows)
+    function exportXLSX() {
+      const visibleCols = dataColumns.filter(c => !colVisibility[c]);
+      let filtered = dataRaw.slice();
+      Object.keys(filters).forEach(k => filtered = filtered.filter(r => String(r[k]) === filters[k]));
+      const q = (globalSearch.value || '').toLowerCase().trim();
+      if (q) filtered = filtered.filter(r => visibleCols.some(c => String(r[c] || '').toLowerCase().includes(q)));
+      if (!filtered.length) { showNotif('No data to export', 'warning'); return; }
+
+      const ws = XLSX.utils.json_to_sheet(filtered.map(r => {
+        const o = {};
+        visibleCols.forEach(c => o[c] = r[c]);
+        return o;
+      }));
+      const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+      XLSX.writeFile(wb, 'datalens_export.xlsx');
+    }
+
+    // Save to localStorage
+    function saveToLocal() {
+      localStorage.setItem('datalens_data', JSON.stringify({ dataRaw, originalFileName: originalFile ? originalFile.name : '' }));
+      showNotif('Saved to localStorage', 'success');
+    }
+    // Load from local storage on init
+    (function loadFromLocal() {
+      const s = localStorage.getItem('datalens_data');
+      if (!s) return;
+      try {
+        const obj = JSON.parse(s);
+        if (obj && obj.dataRaw && obj.dataRaw.length) {
+          dataRaw = obj.dataRaw;
+          postParse(obj.originalFileName || 'localdata.json');
+          showNotif('Loaded dataset from localStorage', 'info');
+        }
+      } catch (e) { }
+    })();
+
+    // Helpers
+    function formatCell(v) {
+      if (v == null) return '';
+      if (typeof v === 'object') return JSON.stringify(v);
+      return String(v);
+    }
+    function escapeHtml(s) { return s.replace(/[&<>"'`]/g, function (m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', "`": '&#96;' }[m]; }); }
+
+    // open other tool (placeholder)
+    function openTool(k) {
+      showNotif('Open ' + k, 'info');
+    }
+
+    // small UX: attach sample tips to 'Open Docs' inside modal
+    document.getElementById('openDocsBtn').addEventListener('click', () => {
+      window.open('https://github.com/sachinkumarhebri', '_blank');
+    });
+
+    // initial render (empty)
+    renderTable();
+  </script>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
