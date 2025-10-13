@@ -1,6 +1,7 @@
 /* Normal header cells (scroll away normally) */
 .table-responsive thead th {
-  background: #dceaff; /* yellow header */
+  background: #dceaff;
+  /* yellow header */
   z-index: 1;
 }
 
@@ -17,5 +18,78 @@
   position: sticky;
   top: 0;
   left: 0;
-  z-index: 5; /* highest so it stays on top */
+  z-index: 5;
+  /* highest so it stays on top */
+}
+
+.content {
+  margin-left: 0;
+}
+
+.breadcrumb {
+  font-size: 0.85rem;
+}
+
+/* === DROP ZONE === */
+.drop-zone {
+  border: 2px dashed #dee2e6;
+  background-color: #fdfdfd;
+  transition: all 0.2s;
+}
+
+.drop-zone:hover {
+  background-color: #f8f9fa;
+  border-color: #0d6efd;
+}
+
+
+/* Hover Dropdown (for Desktop Only) */
+@media (hover: hover) {
+  .hover-dropdown:hover .dropdown-menu {
+    display: block;
+    margin-top: 0;
+    animation: fadeIn 0.2s ease-in-out;
+  }
+}
+
+/* Fade Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dropdown Hover Style */
+.dropdown-menu a.dropdown-item:hover {
+  background-color: #0eb0e3;
+  color: #fff;
+  transition: all 0.2s;
+}
+
+/* Responsive Header Adjustments */
+@media (max-width: 767px) {
+  .header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.5rem !important;
+  }
+
+  .header h1 {
+    font-size: 1.1rem;
+  }
+
+  .header img {
+    height: 35px;
+  }
+
+  .header .btn {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.6rem;
+  }
 }

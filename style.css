@@ -1,0 +1,53 @@
+ body {
+     font-family: 'Poppins', sans-serif;
+     background: #f5f7fa;
+     overflow-x: hidden;
+ }
+
+ nav {
+     background-color: #ffffffb3;
+     backdrop-filter: blur(10px);
+     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+ }
+
+ nav .navbar-brand span {
+     font-weight: 700;
+     color: #022260;
+ }
+
+ nav .navbar-brand span span {
+     color: #0eb0e3;
+ }
+
+ .hero {
+     text-align: center;
+     padding: 80px 20px;
+     background: linear-gradient(120deg, #022260, #0eb0e3);
+     color: white;
+     border-radius: 0 0 50px 50px;
+ }
+
+ .hero h1 {
+     font-size: 2.8rem;
+     font-weight: 700;
+     margin-bottom: 20px;
+ }
+
+ .hero p {
+     font-size: 1.2rem;
+     max-width: 650px;
+     margin: 0 auto 30px;
+     color: #dcefff;
+ }
+
+ footer {
+     background-color: #022260;
+     color: white;
+     padding: 10px 10px 10px 10px;
+     text-align: center;
+ }
+
+ footer a {
+     color: #0eb0e3;
+     text-decoration: none;
+ }

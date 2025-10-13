@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataLens | Cloud API & Data Platform</title>
+
+    <!-- Bootstrap / Icons / AOS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        .section {
+            display: none;
+            padding: 40px 20px;
+        }
+
+        .active-section {
+            display: block;
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tool-card {
+            border: none;
+            border-radius: 18px;
+            transition: all 0.3s;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+            background: white;
+            min-height: -webkit-fill-available;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .tool-icon {
+            font-size: 45px;
+            color: #0eb0e3;
+            margin-bottom: 15px;
+        }
+
+       
+        /* API Tables */
+        table.api-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        table.api-table th,
+        table.api-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            word-wrap: break-word;
+        }
+
+        table.api-table th {
+            background-color: #f2f2f2;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            nav .navbar-nav {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header"></div>
+
+    <!-- HOME -->
+    <section id="home" class="section active-section">
+        <div class="hero" data-aos="fade-up">
+            <h1>Explore • Analyze • Build</h1>
+            <p>DataLens is your all-in-one platform to test APIs, mock endpoints, explore datasets, and experiment in
+                sandboxed environments.</p>
+            <a href="dataExplorer.html" class="btn btn-light btn-lg shadow-sm px-4 py-2">Start with
+                Data Explorer...</a>
+        </div>
+
+        <div class="container my-5 text-center">
+            <h2 class="fw-bold mb-4" data-aos="fade-up">All Tools in One Place</h2>
+            <div class="row g-4 justify-content-center">
+                <div class="col-md-3" data-aos="zoom-in">
+                    <div class="card tool-card text-center p-4">
+                        <i class="bi bi-lightning-fill tool-icon"></i>
+                        <h5>API Lens</h5>
+                        <p class="text-muted">Test, debug, and monitor APIs instantly.</p>
+                        <a href="#" onclick="showSection('apiLens')" class="btn btn-outline-primary btn-sm mt-2">Open
+                            Tool</a>
+                    </div>
+                </div>
+                <div class="col-md-3" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="card tool-card text-center p-4">
+                        <i class="bi bi-tools tool-icon"></i>
+                        <h5>API Studio</h5>
+                        <p class="text-muted">Design, mock, & test your APIs.</p>
+                        <a href="#" onclick="showSection('apiStudio')" class="btn btn-outline-primary btn-sm mt-2">Open
+                            Tool</a>
+                    </div>
+                </div>
+                <div class="col-md-3" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="card tool-card text-center p-4">
+                        <i class="bi bi-search tool-icon"></i>
+                        <h5>API Explorer</h5>
+                        <p class="text-muted">Browse endpoints, inspect headers & explore documentation.</p>
+                        <a href="#" onclick="showSection('apiExplorer')"
+                            class="btn btn-outline-primary btn-sm mt-2">Open Tool</a>
+                    </div>
+                </div>
+                <div class="col-md-3" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="card tool-card text-center p-4">
+                        <i class="bi bi-puzzle-fill tool-icon"></i>
+                        <h5>API Sandbox</h5>
+                        <p class="text-muted">Experiment safely with isolated API testing environments.</p>
+                        <a href="#" onclick="showSection('apiSandbox')" class="btn btn-outline-primary btn-sm mt-2">Open
+                            Tool</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- API LENS -->
+    <section id="apiLens" class="section container">
+        <h2 class="fw-bold text-center mb-4">API Lens</h2>
+        <div class="card p-4 shadow-sm">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <select id="apiLensMethod" class="form-select">
+                        <option>GET</option>
+                        <option>POST</option>
+                        <option>PUT</option>
+                        <option>DELETE</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" id="apiLensUrl" class="form-control" placeholder="Enter API URL">
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary w-100" onclick="callApiLens()">Send</button>
+                </div>
+            </div>
+            <div class="mt-3">
+                <h6>Headers (JSON)</h6>
+                <textarea id="apiLensHeaders" class="form-control" rows="2"
+                    placeholder='{"Authorization":"Bearer ..."}'></textarea>
+            </div>
+            <div class="mt-3">
+                <h6>Body (JSON for POST/PUT)</h6>
+                <textarea id="apiLensBody" class="form-control" rows="4" placeholder='{"key":"value"}'></textarea>
+            </div>
+            <hr>
+            <table class="api-table mt-3" id="apiLensOutput">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Response</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- API Studio -->
+    <section id="apiStudio" class="section container">
+        <h2 class="fw-bold text-center mb-4">API Studio (Mock API)</h2>
+        <div class="card p-4 shadow-sm">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <input type="text" id="studioEndpoint" class="form-control" placeholder="/mock-endpoint">
+                </div>
+                <div class="col-md-3">
+                    <select id="studioMethod" class="form-select">
+                        <option>GET</option>
+                        <option>POST</option>
+                        <option>PUT</option>
+                        <option>DELETE</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <textarea id="studioResponse" class="form-control" rows="3"
+                        placeholder='{"message":"Hello"}'></textarea>
+                </div>
+            </div>
+            <div class="mt-3 text-end">
+                <button class="btn btn-success" onclick="addMockEndpoint()">Save Mock</button>
+            </div>
+            <hr>
+            <h6>Saved Mocks</h6>
+            <table class="api-table" id="studioOutput">
+                <thead>
+                    <tr>
+                        <th>Endpoint</th>
+                        <th>Method</th>
+                        <th>Response</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- API Explorer -->
+    <section id="apiExplorer" class="section container">
+        <h2 class="fw-bold text-center mb-4">API Explorer</h2>
+        <div class="card p-4 shadow-sm text-center">
+            <input type="file" id="explorerFile" class="form-control w-50 mx-auto mb-3">
+            <table class="api-table mt-3" id="explorerOutput">
+                <thead></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- API Sandbox -->
+    <section id="apiSandbox" class="section container">
+        <h2 class="fw-bold text-center mb-4">API Sandbox</h2>
+        <div class="card p-4 shadow-sm text-center">
+            <p>Call Mock APIs or real APIs safely in sandbox.</p>
+            <input type="text" id="sandboxUrl" class="form-control w-50 mx-auto mb-2" placeholder="API URL">
+            <button class="btn btn-primary mb-2" onclick="callSandbox()">Call Sandbox</button>
+            <table class="api-table mt-3" id="sandboxOutput">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Response</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Footer placeholder -->
+    <div id="footer"></div>
+
+    <!-- Guide Modal -->
+    <div id="guide"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script>
+        AOS.init({ duration: 1000, once: true });
+
+        // Section Switcher
+        function showSection(id) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active-section'));
+            document.getElementById(id).classList.add('active-section');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Mock storage
+        const mocks = [];
+
+        // API Lens
+        async function callApiLens() {
+            const url = document.getElementById('apiLensUrl').value;
+            const method = document.getElementById('apiLensMethod').value;
+            const headersText = document.getElementById('apiLensHeaders').value;
+            const bodyText = document.getElementById('apiLensBody').value;
+            const output = document.querySelector('#apiLensOutput tbody');
+            output.innerHTML = `<tr><td colspan="2">Loading...</td></tr>`;
+
+            let headers = {};
+            try { headers = JSON.parse(headersText || '{}'); } catch (e) { alert('Invalid JSON in headers'); return; }
+            let body = bodyText || undefined;
+            try { if (body && (method === 'POST' || method === 'PUT')) body = JSON.stringify(JSON.parse(bodyText)); }
+            catch (e) { alert('Invalid JSON body'); return; }
+
+            try {
+                const res = await fetch(url, { method, headers, body });
+                const text = await res.text();
+                output.innerHTML = `<tr><td>${res.status}</td><td><pre>${text}</pre></td></tr>`;
+            } catch (err) {
+                output.innerHTML = `<tr><td>Error</td><td>${err.message}</td></tr>`;
+            }
+        }
+
+        // API Studio
+        function addMockEndpoint() {
+            const endpoint = document.getElementById('studioEndpoint').value;
+            const method = document.getElementById('studioMethod').value;
+            let response = document.getElementById('studioResponse').value;
+            try { response = JSON.stringify(JSON.parse(response)); } catch (e) { alert('Invalid JSON'); return; }
+            mocks.push({ endpoint, method, response });
+            renderStudioMocks();
+        }
+        function renderStudioMocks() {
+            const tbody = document.querySelector('#studioOutput tbody');
+            tbody.innerHTML = '';
+            mocks.forEach(m => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${m.endpoint}</td><td>${m.method}</td><td><pre>${m.response}</pre></td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // API Explorer
+        document.getElementById('explorerFile').addEventListener('change', e => {
+            const file = e.target.files[0];
+            const output = document.querySelector('#explorerOutput');
+            output.querySelector('thead').innerHTML = '';
+            output.querySelector('tbody').innerHTML = '';
+            if (!file) return;
+
+            if (file.name.endsWith('.csv') || file.name.endsWith('.txt')) {
+                Papa.parse(file, {
+                    header: true,
+                    complete: function (results) { renderTable(results.data); }
+                });
+            } else if (file.name.endsWith('.json')) {
+                const reader = new FileReader();
+                reader.onload = () => { renderTable(JSON.parse(reader.result)); };
+                reader.readAsText(file);
+            } else { alert('Unsupported file type'); }
+
+            function renderTable(data) {
+                if (!data.length) return;
+                const thead = output.querySelector('thead');
+                const tbody = output.querySelector('tbody');
+                thead.innerHTML = '<tr>' + Object.keys(data[0]).map(k => `<th>${k}</th>`).join('') + '</tr>';
+                tbody.innerHTML = data.map(r => `<tr>${Object.values(r).map(v => `<td>${v}</td>`).join('')}</tr>`).join('');
+            }
+        });
+
+        // API Sandbox
+        async function callSandbox() {
+            const url = document.getElementById('sandboxUrl').value;
+            const output = document.querySelector('#sandboxOutput tbody');
+            output.innerHTML = `<tr><td colspan="2">Loading...</td></tr>`;
+            try {
+                const res = await fetch(url);
+                const text = await res.text();
+                output.innerHTML = `<tr><td>${res.status}</td><td><pre>${text}</pre></td></tr>`;
+            } catch (err) {
+                output.innerHTML = `<tr><td>Error</td><td>${err.message}</td></tr>`;
+            }
+        }
+    </script>
+    <script src="app.js"></script>
+</body>
+
+</html>

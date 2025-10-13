@@ -1,0 +1,36 @@
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light sticky-top px-2">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="#" onclick="showSection('home')">
+            <img src="assets/DataLensLogo.png" alt="DataLens Logo" height="40">
+            <div class="d-flex flex-column">
+                <span class="fw-bold"><span style="color:#022260;">Data</span><span
+                        style="color:#0eb0e3;">Lens</span></span>
+                <small class="text-muted" style="font-size:12px;">Client-Side Data Explorer</small>
+            </div>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav gap-3">
+                <li class="nav-item"><a class="nav-link" href="home.html">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('apiLens')">API Lens</a></li>
+                <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('apiStudio')">API Studio</a>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('apiExplorer')">API
+                        Explorer</a></li>
+                <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('apiSandbox')">API
+                        Sandbox</a></li>
+                <!-- Guide Button in Navbar -->
+                <!-- Add this inside your navbar <ul> after Sandbox -->
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#guideModal">
+                        <i class="bi bi-info-circle"></i> Guide
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</nav>
