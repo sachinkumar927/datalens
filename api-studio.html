@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>DataLens — Premium Data Explorer</title>
+    <link rel="icon" type="image/png" href="assets/DataLensIco.ico" />
+
+    <!-- Bootstrap & Fonts -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <link rel="stylesheet" href="table.css" />
+    <link rel="stylesheet" href="style.css" />
+
+    <style>
+        :root {
+            --primary: #0eb0e3;
+            --dark: #022260;
+            --glass: rgba(255, 255, 255, 0.65);
+            --muted: #6c757d;
+            --card-bg: #ffffff;
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            background: linear-gradient(180deg, #f3f8ff 0%, #eef6ff 100%);
+            color: #0b1b2b;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .main-container {
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        .header {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        @media(min-width:768px) {
+            .header {
+                align-items: right !important;
+                justify-content: space-between;
+            }
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--dark), var(--primary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            box-shadow: 0 6px 18px rgba(14, 176, 227, 0.15);
+        }
+
+        .brand-title .title-main {
+            font-weight: 700;
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+
+        .brand-title .title-sub {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid rgba(11, 27, 43, 0.06);
+        }
+
+        .app-card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.75));
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 12px 30px rgba(3, 17, 44, 0.06);
+            backdrop-filter: blur(6px);
+        }
+
+        .drop-zone {
+            border-radius: 10px;
+            border: 2px dashed rgba(2, 34, 80, 0.08);
+            padding: 18px;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.55));
+        }
+
+        .drop-zone.dragover {
+            background: linear-gradient(180deg, rgba(14, 176, 227, 0.06), rgba(14, 176, 227, 0.03));
+            border-color: rgba(14, 176, 227, 0.45);
+        }
+
+        .info-badge {
+            background: #fff;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 6px 18px rgba(2, 34, 80, 0.04);
+        }
+
+        .table-wrapper {
+            max-height: 48vh;
+            overflow: auto;
+            border-radius: 8px
+        }
+
+        table thead th {
+            position: sticky;
+            top: 0;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9));
+            z-index: 5
+        }
+
+        tbody tr:hover {
+            background: rgba(14, 176, 227, 0.04);
+            transform: translateY(-1px);
+            transition: all .12s
+        }
+
+        .card-view {
+            display: none
+        }
+
+        @media(max-width:767px) {
+            .table-responsive {
+                display: none
+            }
+
+            .card-view {
+                display: block
+            }
+        }
+
+        .toolbar .form-control,
+        .toolbar .btn {
+            min-height: calc(1.5em + .75rem + 2px)
+        }
+
+        .chart-container {
+            height: 320px
+        }
+
+        .muted {
+            color: var(--muted)
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-break: break-word
+        }
+
+        .list-group li div {
+            width: 85%
+        }
+
+        /* Raw response scrollable */
+        #rawOutput {
+            max-height: 400px;
+            /* adjust height as needed */
+            overflow-y: auto;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+        }
+
+        /* JSON/Table response scrollable */
+        #jsonOutput {
+            max-height: 400px;
+            /* same height as raw */
+            overflow-y: auto;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+            white-space: pre-wrap;
+            /* ensures long JSON wraps */
+            word-break: break-word;
+        }
+
+        /* Fixed size sidebar with scroll */
+        aside.col-12.col-md-3 {
+            max-width: 300px;
+            /* fixed width */
+            min-width: 250px;
+            /* optional minimum width */
+            height: 90vh;
+            /* adjust height as needed */
+            overflow-y: auto;
+            /* vertical scroll */
+            position: sticky;
+            /* keeps it in view while scrolling */
+            top: 20px;
+            /* distance from top */
+        }
+
+        /* Optional: smooth scroll for sidebar */
+        aside.col-12.col-md-3::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        aside.col-12.col-md-3::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div id="header"></div>
+        <div class="main-container mb-2">
+            <div class="container-fluid p-2">
+                <div class="app container-fluid mt-3">
+                    <div class="row g-3 align-items-stretch">
+                        <!-- Sidebar -->
+                        <aside class="col-12 col-md-3 d-flex">
+                            <div class="card shadow-sm flex-fill">
+                                <div class="card-body p-2 d-flex flex-column">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <strong>Collections</strong>
+                                        <button id="newCollectionBtn" class="btn btn-sm btn-success">New</button>
+                                    </div>
+                                    <input id="collectionSearch" class="form-control form-control-sm mb-2"
+                                        placeholder="Search collections...">
+                                    <ul id="collectionsList" class="list-group small collection-list flex-fill mb-2">
+                                    </ul>
+                                    <hr class="my-2">
+                                    <strong>History</strong>
+                                    <ul id="historyList" class="list-group small history-list mt-2 flex-fill"></ul>
+                                    <div class="mt-3 text-muted small">
+                                        <div>Storage: <code>localStorage</code> & <code>IndexedDB</code></div>
+                                        <div>History cap: <span id="historyCapLabel">50</span></div>
+                                        <button id="clearHistory" class="btn btn-sm btn-outline-danger mt-2">Clear
+                                            History</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </aside>
+
+                        <!-- Main -->
+                        <main class="col-md-9 d-flex flex-column">
+                            <!-- Request Form Card -->
+                            <div class="card shadow-sm flex-fill mb-3">
+                                <div class="card-body">
+                                    <form id="requestForm" class="row g-2 align-items-center">
+                                        <div class="col-auto">
+                                            <select id="method" class="form-select form-select-sm">
+                                                <option>GET</option>
+                                                <option>POST</option>
+                                                <option>PUT</option>
+                                                <option>PATCH</option>
+                                                <option>DELETE</option>
+                                                <option>HEAD</option>
+                                                <option>OPTIONS</option>
+                                            </select>
+                                        </div>
+                                        <div class="col">
+                                            <input id="urlInput" class="form-control form-control-sm"
+                                                placeholder="https://api.example.com/endpoint">
+                                        </div>
+                                        <div class="col-auto">
+                                            <button id="sendBtn" class="btn btn-primary btn-sm">
+                                                Send
+                                                <span id="sendSpinner"
+                                                    class="spinner-border spinner-border-sm d-none"></span>
+                                            </button>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="d-flex gap-2">
+                                                <button id="addHeaderBtn" type="button"
+                                                    class="btn btn-outline-secondary btn-sm">Headers</button>
+                                                <button id="addQueryBtn" type="button"
+                                                    class="btn btn-outline-secondary btn-sm">Query Params</button>
+                                                <button id="bodyToggle" type="button"
+                                                    class="btn btn-outline-secondary btn-sm">Body</button>
+                                                <button id="saveRequestBtn" type="button"
+                                                    class="btn btn-outline-success btn-sm ms-auto">Save to
+                                                    Collection</button>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                    <div id="editors" class="mt-3 d-none">
+                                        <div id="headersEditor" class="editor-block mb-2"></div>
+                                        <div id="queryEditor" class="editor-block mb-2"></div>
+                                        <div id="bodyEditor" class="editor-block mb-2">
+                                            <select id="bodyMode" class="form-select form-select-sm mb-2"
+                                                style="width:200px">
+                                                <option value="raw">Raw</option>
+                                                <option value="json">JSON</option>
+                                                <option value="form">Form Data</option>
+                                            </select>
+                                            <textarea id="bodyInput" class="form-control" rows="6"
+                                                placeholder='{"key":"value"}'></textarea>
+                                            <div id="bodyError" class="form-text text-danger d-none"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Response Card -->
+                            <div class="card shadow-sm flex-fill mb-3">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <strong>Response</strong>
+                                        <div class="small text-muted">
+                                            <span id="statusLabel">-</span> • <span id="timeLabel">-</span> • <span
+                                                id="sizeLabel">-</span>
+                                        </div>
+                                    </div>
+
+                                    <ul class="nav nav-tabs" id="responseTabs">
+                                        <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab"
+                                                data-bs-target="#respRaw">Raw</button></li>
+                                        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab"
+                                                data-bs-target="#respJson">JSON / Table</button></li>
+                                        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab"
+                                                data-bs-target="#respHeaders">Headers</button></li>
+                                    </ul>
+
+                                    <div class="tab-content mt-2">
+                                        <div class="tab-pane fade show active" id="respRaw">
+                                            <pre id="rawOutput"><code id="rawCode"></code></pre>
+                                        </div>
+                                        <div class="tab-pane fade" id="respJson">
+                                            <div id="jsonControls" class="mb-2 d-none">
+                                                <button id="openInExplorer" class="btn btn-sm btn-outline-primary">Open
+                                                    in Data Explorer</button>
+                                                <button id="saveResponseBtn" class="btn btn-sm btn-outline-success">Save
+                                                    Response</button>
+                                            </div>
+                                            <div id="jsonOutput" class="json-output small"></div>
+                                        </div>
+                                        <div class="tab-pane fade" id="respHeaders">
+                                            <pre id="headersOutput" class="small"></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Data Explorer Card -->
+                            <div id="dataExplorerWrapper" class="mt-3 d-none">
+                                <div class="card shadow-sm flex-fill">
+                                    <div class="card-body">
+                                        <div
+                                            class="d-flex flex-wrap justify-content-between align-items-center mb-2 gap-2">
+                                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                                <strong>Data Explorer</strong>
+                                                <input id="globalSearch" class="form-control form-control-sm"
+                                                    placeholder="🔍 Global Search..." style="width:200px;">
+                                                <select id="chartType" class="form-select form-select-sm"
+                                                    style="width:140px;">
+                                                    <option value="">Chart Type</option>
+                                                    <option value="bar">Bar</option>
+                                                    <option value="line">Line</option>
+                                                    <option value="pie">Pie</option>
+                                                </select>
+                                                <button id="analyzeBtn"
+                                                    class="btn btn-sm btn-outline-primary">Analyze</button>
+                                            </div>
+                                            <div class="d-flex flex-wrap gap-2">
+                                                <button id="columnSelectBtn"
+                                                    class="btn btn-sm btn-outline-dark">Columns</button>
+                                                <button id="downloadCsv"
+                                                    class="btn btn-sm btn-outline-secondary">CSV</button>
+                                                <button id="downloadXlsx"
+                                                    class="btn btn-sm btn-outline-secondary">XLSX</button>
+                                                <button id="saveDataset"
+                                                    class="btn btn-sm btn-outline-success">Save</button>
+                                            </div>
+                                        </div>
+                                        <div id="columnSelector" class="mb-2 d-none"></div>
+                                        <canvas id="dataChart" class="my-3" style="max-height:300px;"></canvas>
+                                        <div id="dataTableContainer" class="table-responsive"></div>
+                                        <div id="dataPager" class="mt-2 small"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </main>
+                    </div>
+                </div>
+            </div>
+            <!-- notifications -->
+            <div id="notif" class="position-fixed bottom-0 end-0 p-3" style="z-index:1050"></div>
+
+        </div> <!-- /main-container -->
+        <!-- Footer -->
+        <div id="footer"></div>
+        <div id="guide"></div>
+    </div>
+
+    <!-- JS libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="app.js"></script>
+
+    <script>
+        AOS.init({ duration: 800, once: true });
+
+        /* --------------------------
+           STORAGE + HELPERS
+        -------------------------- */
+        class Storage {
+            constructor() {
+                this.prefix = 'apilens_';
+                this._initDB();
+            }
+            _get(k) { try { return JSON.parse(localStorage.getItem(this.prefix + k)) } catch (e) { return null } }
+            _set(k, v) { localStorage.setItem(this.prefix + k, JSON.stringify(v)) }
+            getCollections() { return this._get('collections') || [] }
+            saveCollection(col) { const cols = this.getCollections().filter(c => c.id !== col.id); cols.unshift(col); this._set('collections', cols) }
+            deleteCollection(id) { this._set('collections', this.getCollections().filter(c => c.id !== id)) }
+            pushHistory(it) { const h = this._get('history') || []; h.unshift(it); if (h.length > 50) h.splice(50); this._set('history', h) }
+            getHistory() { return this._get('history') || [] }
+            clearHistory() { this._set('history', []) }
+            _initDB() { const r = indexedDB.open('apilens_db', 1); r.onupgradeneeded = e => { const db = e.target.result; if (!db.objectStoreNames.contains('datasets')) db.createObjectStore('datasets', { keyPath: 'id' }); if (!db.objectStoreNames.contains('responses')) db.createObjectStore('responses', { keyPath: 'id' }) }; r.onsuccess = () => { this._db = r.result }; }
+            _put(store, obj) { return new Promise((res, rej) => { const tx = this._db.transaction([store], 'readwrite'); const st = tx.objectStore(store); const r = st.put(obj); r.onsuccess = () => res(true); r.onerror = () => rej(r.error); }); }
+            async saveDataset(data) { return this._put('datasets', { id: 'ds_' + Date.now(), data, created: Date.now() }); }
+        }
+
+        async function apiRequest({ method = 'GET', url, headers = {}, params = {}, body = null }) {
+            const urlObj = new URL(url, window.location.origin);
+            for (const k of Object.keys(params || {})) if (params[k]) urlObj.searchParams.set(k, params[k]);
+            const opts = { method, headers: { ...headers } };
+            if (method !== 'GET' && method !== 'HEAD' && body) { try { JSON.parse(body); opts.body = body; if (!opts.headers['Content-Type']) opts.headers['Content-Type'] = 'application/json'; } catch { opts.body = body; } }
+            const resp = await fetch(urlObj.toString(), opts);
+            const headersObj = {}; resp.headers.forEach((v, k) => headersObj[k] = v);
+            let text = await resp.text(), json = null; try { json = JSON.parse(text) } catch { }
+            return { status: resp.status, statusText: resp.statusText, headers: headersObj, text, json, size: resp.headers.get('content-length') || '-' };
+        }
+
+        function renderTableFromJson(json, container, pagerEl) {
+            container.innerHTML = ''; pagerEl.innerHTML = '';
+            let arr = Array.isArray(json) ? json : (Array.isArray(json.data) ? json.data : null);
+            if (!arr) { container.innerHTML = '<div class="text-muted small">No tabular array found.</div>'; return; }
+            const cols = Array.from(new Set(arr.flatMap(o => Object.keys(o))));
+            const table = document.createElement('table'); table.className = 'table table-sm table-striped';
+            const thead = document.createElement('thead'); thead.innerHTML = '<tr>' + cols.map(c => '<th>' + c + '</th>').join('') + '</tr>'; table.appendChild(thead);
+            const tbody = document.createElement('tbody');
+            arr.forEach(r => { const tr = document.createElement('tr'); cols.forEach(c => { const v = r[c] ?? ''; tr.innerHTML += '<td>' + (typeof v === 'object' ? JSON.stringify(v) : v) + '</td>'; }); tbody.appendChild(tr); });
+            table.appendChild(tbody); container.appendChild(table); pagerEl.textContent = arr.length + ' rows';
+        }
+
+        function downloadCSV(json, filename = 'data.csv') {
+            let arr = Array.isArray(json) ? json : (Array.isArray(json.data) ? json.data : null);
+            if (!arr) return alert('No array data');
+            const cols = Array.from(new Set(arr.flatMap(o => Object.keys(o))));
+            const lines = [cols.join(',')];
+            arr.forEach(r => { const row = cols.map(c => '"' + String(r[c] ?? '').replace(/"/g, '""') + '"'); lines.push(row.join(',')); });
+            const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; a.click();
+        }
+
+        /* --------------------------
+           MAIN APP LOGIC
+        -------------------------- */
+        document.addEventListener('DOMContentLoaded', () => {
+            const qs = s => document.querySelector(s);
+            const storage = new Storage();
+
+            const sendBtn = qs('#sendBtn'), sendSpinner = qs('#sendSpinner'), method = qs('#method'),
+                urlInput = qs('#urlInput'), headersEditor = qs('#headersEditor'),
+                queryEditor = qs('#queryEditor'), bodyEditor = qs('#bodyEditor'),
+                bodyToggle = qs('#bodyToggle'), bodyInput = qs('#bodyInput'), bodyMode = qs('#bodyMode'),
+                jsonOutput = qs('#jsonOutput'), jsonControls = qs('#jsonControls'),
+                statusLabel = qs('#statusLabel'), timeLabel = qs('#timeLabel'), sizeLabel = qs('#sizeLabel'),
+                headersOutput = qs('#headersOutput'), rawCode = qs('#rawCode'),
+                openInExplorer = qs('#openInExplorer'), dataTableContainer = qs('#dataTableContainer'),
+                dataPager = qs('#dataPager'), downloadCsv = qs('#downloadCsv'),
+                saveDataset = qs('#saveDataset'), dataExplorerWrapper = qs('#dataExplorerWrapper'),
+                collectionsList = qs('#collectionsList'), historyList = qs('#historyList'),
+                clearHistory = qs('#clearHistory'), newCollectionBtn = qs('#newCollectionBtn'),
+                saveRequestBtn = qs('#saveRequestBtn');
+
+            function makeKeyValueRow() {
+                const d = document.createElement('div');
+                d.className = 'd-flex gap-2 mb-2';
+                d.innerHTML = `<input class="form-control form-control-sm key" placeholder="Key">
+          <input class="form-control form-control-sm value" placeholder="Value">
+          <button class="btn btn-sm btn-outline-danger removeRow"><i class="bi bi-x"></i></button>`;
+                d.querySelector('.removeRow').addEventListener('click', () => d.remove());
+                return d;
+            }
+
+            function gatherKeyValue(container) {
+                const rows = container.querySelectorAll('.d-flex');
+                const out = {};
+                rows.forEach(r => {
+                    const k = r.querySelector('.key').value.trim();
+                    const v = r.querySelector('.value').value.trim();
+                    if (k) out[k] = v;
+                });
+                return out;
+            }
+
+            bodyToggle.addEventListener('click', () => {
+                document.querySelector('#editors').classList.toggle('d-none');
+                bodyEditor.classList.toggle('d-none');
+            });
+
+            qs('#addHeaderBtn').addEventListener('click', () => headersEditor.appendChild(makeKeyValueRow()));
+            qs('#addQueryBtn').addEventListener('click', () => queryEditor.appendChild(makeKeyValueRow()));
+
+            newCollectionBtn.addEventListener('click', () => {
+                const name = prompt('New collection name:');
+                if (!name) return;
+                const col = { id: 'col_' + Date.now(), name, items: [] };
+                storage.saveCollection(col);
+                renderCollections();
+            });
+
+            saveRequestBtn.addEventListener('click', () => {
+                const name = prompt('Save request to collection name:');
+                if (!name) return;
+                const col = storage.getCollections().find(c => c.name === name) || { id: 'col_' + Date.now(), name, items: [] };
+                const item = {
+                    id: 'req_' + Date.now(),
+                    method: method.value,
+                    url: urlInput.value,
+                    headers: gatherKeyValue(headersEditor),
+                    params: gatherKeyValue(queryEditor),
+                    body: bodyInput.value,
+                    created: Date.now()
+                };
+                col.items.push(item);
+                storage.saveCollection(col);
+                renderCollections();
+                alert('Saved to collection.');
+            });
+
+            sendBtn.addEventListener('click', async e => {
+                e.preventDefault();
+                const url = urlInput.value.trim();
+                if (!url) return alert('Enter URL');
+                sendSpinner.classList.remove('d-none');
+                try {
+                    const headers = gatherKeyValue(headersEditor);
+                    const params = gatherKeyValue(queryEditor);
+                    let body = null;
+                    if (!bodyEditor.classList.contains('d-none')) {
+                        const mode = bodyMode.value;
+                        if (mode === 'json') {
+                            try { JSON.parse(bodyInput.value); } catch (e) {
+                                qs('#bodyError').classList.remove('d-none');
+                                qs('#bodyError').textContent = 'Invalid JSON';
+                                sendSpinner.classList.add('d-none');
+                                return;
+                            }
+                        }
+                        body = bodyInput.value;
+                    }
+                    const start = performance.now();
+                    const resp = await apiRequest({ method: method.value, url, headers, params, body });
+                    const elapsed = Math.round(performance.now() - start);
+                    sendSpinner.classList.add('d-none');
+
+                    statusLabel.textContent = resp.status + ' ' + resp.statusText;
+                    timeLabel.textContent = elapsed + ' ms';
+                    sizeLabel.textContent = resp.size || '-';
+
+                    rawCode.textContent = resp.text;
+                    headersOutput.textContent = Object.entries(resp.headers).map(([k, v]) => k + ': ' + v).join('\n');
+
+                    jsonOutput.innerHTML = '';
+                    jsonControls.classList.add('d-none');
+                    dataExplorerWrapper.classList.add('d-none');
+                    if (resp.json) {
+                        jsonOutput.innerHTML = '<pre class="p-2 bg-light border rounded small"><code>' + JSON.stringify(resp.json, null, 2) + '</code></pre>';
+                        jsonControls.classList.remove('d-none');
+                        openInExplorer.onclick = () => {
+                            dataExplorerWrapper.classList.remove('d-none');
+                            renderTableFromJson(resp.json, dataTableContainer, dataPager);
+                        };
+                        downloadCsv.onclick = () => downloadCSV(resp.json, 'response.csv');
+                        saveDataset.onclick = () => storage.saveDataset(resp.json).then(() => alert('Saved to IndexedDB'));
+                    } else {
+                        jsonOutput.innerHTML = '<div class="text-muted small">Response is not JSON.</div>';
+                    }
+
+                    storage.pushHistory({ method: method.value, url, created: Date.now() });
+                    renderHistory();
+                } catch (err) {
+                    sendSpinner.classList.add('d-none');
+                    alert('Request failed: ' + err.message);
+                }
+            });
+
+            clearHistory.addEventListener('click', () => {
+                if (confirm('Clear history?')) {
+                    storage.clearHistory();
+                    renderHistory();
+                }
+            });
+
+            function renderCollections() {
+                const cols = storage.getCollections();
+                collectionsList.innerHTML = '';
+                cols.forEach(c => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                    li.innerHTML = `<div><strong>${c.name}</strong><div class="small text-muted">${c.items.length} requests</div></div>
+            <div><button class="btn btn-sm btn-outline-danger delCol"><i class="bi bi-trash"></i></button></div>`;
+                    li.querySelector('.delCol').addEventListener('click', () => {
+                        if (confirm('Delete collection?')) { storage.deleteCollection(c.id); renderCollections(); }
+                    });
+                    collectionsList.appendChild(li);
+                });
+            }
+
+            function renderHistory() {
+                const h = storage.getHistory();
+                historyList.innerHTML = '';
+                h.forEach(it => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                    li.innerHTML = `<div><strong>${it.method}</strong> ${it.url}</div><div><button class="btn btn-sm btn-outline-secondary replayBtn">Run</button></div>`;
+                    li.querySelector('.replayBtn').addEventListener('click', () => {
+                        method.value = it.method;
+                        urlInput.value = it.url;
+                    });
+                    historyList.appendChild(li);
+                });
+            }
+
+            renderCollections();
+            renderHistory();
+        });
+    </script>
+</body>
+
+</html>
