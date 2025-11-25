@@ -1,0 +1,703 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DataLens — Schema Designer (Professional)</title>
+    <link rel="icon" type="image/png" href="assets/DataLensIco.ico" />
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+    <!-- Cytoscape + dagre for auto-layout -->
+    <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+    <script src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
+    <script src="https://unpkg.com/cytoscape-dagre/cytoscape-dagre.js"></script>
+
+    <style>
+        :root {
+            --bg: #f6f8fb;
+            --card: #ffffff;
+            --accent: #2563eb;
+            --muted: #6b7280;
+            --glass: rgba(15, 23, 42, 0.04);
+            --radius: 12px;
+        }
+
+        html,
+        body {
+            height: 100%;
+            background: var(--bg);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+            color: #0f172a;
+        }
+
+        /* ==== HEADER ==== */
+        .navbar-bg {
+            background: linear-gradient(180deg, rgba(184, 236, 201, 0.9), rgba(136, 236, 194, 0.8));
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: #000000 !important;
+            font-size: 1.4rem;
+        }
+
+        .nav-link {
+            color: #000000 !important;
+            margin-right: 1rem;
+            transition: 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #facc15 !important;
+        }
+
+        .app-shell {
+            padding: 18px;
+        }
+
+        .card-pro {
+            border: 0;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+            background: linear-gradient(180deg, rgba(184, 236, 201, 0.9), rgba(255, 255, 255, 0.82));
+        }
+
+        .sidebar {
+            height: calc(100vh - 160px);
+            overflow: auto;
+        }
+
+        .designer {
+            height: 60vh;
+            border-radius: 10px;
+            border: 1px solid #eef2f6;
+            background: linear-gradient(180deg, rgba(184, 236, 201, 0.9), rgba(255, 255, 255, 0.82));
+            padding: 12px;
+        }
+
+        #erCanvas {
+            width: 100%;
+            height: 85%;
+            border-radius: 8px;
+            background: linear-gradient(180deg, rgba(184, 236, 201, 0.9), rgba(255, 255, 255, 0.82));
+        }
+
+        .list-group-item.table-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-preview {
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: #eef2f7;
+            font-size: 0.82rem;
+        }
+
+        pre#sqlArea {
+            height: 180px;
+            overflow: auto;
+            background: #0b1220;
+            color: #e6eef6;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        .help-note {
+            font-size: 0.85rem;
+            color: #475569;
+        }
+
+        /* responsive tweaks */
+        @media (max-width:991.98px) {
+            .sidebar {
+                height: auto;
+            }
+        }
+
+        /* FOOTER */
+        footer {
+            background: linear-gradient(180deg, rgba(184, 236, 201, 0.9), rgba(136, 236, 194, 0.8));
+            color: #000000;
+            padding: 20px 20px;
+            text-align: center;
+        }
+
+        footer a {
+            color: #ff6600;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- NAV -->
+    <nav class="navbar navbar-bg navbar-expand-lg px-3 py-2">
+        <a class="navbar-brand d-flex align-items-center" href="#">
+            <img src="assets/DataLensLogo.png" alt="DataLens Logo" height="40">
+            <div class="d-flex flex-column">
+                <span>DataLens</span>
+                <small class="text-muted" style="font-size:10px;">Client-Side Data Platform</small>
+            </div>
+        </a>
+        <div class="ms-auto d-flex gap-2 align-items-center">
+            <button id="undoBtn" class="btn btn-sm btn-light" title="Undo" disabled><i
+                    class="bi bi-arrow-counterclockwise"></i></button>
+            <button id="redoBtn" class="btn btn-sm btn-light" title="Redo" disabled><i
+                    class="bi bi-arrow-clockwise"></i></button>
+            <button id="saveJson" class="btn btn-sm btn-outline-success">Save JSON</button>
+            <button id="loadJsonBtn" class="btn btn-sm btn-outline-primary">Load</button>
+            <button class="btn btn-sm btn-light" onclick="redirectToPage('index.html')" title="Home">
+                <i class="bi bi-house-door"></i>
+            </button>
+            <button class="btn btn-sm btn-light" id="helpBtn" title="Docs & Help" onclick="redirectToPage('docs.html')">
+                <i class="bi bi-question-circle"></i>
+            </button>
+        </div>
+    </nav>
+
+    <main class="container-fluid app-shell">
+        <div class="row g-3">
+            <!-- Left: Tables list & templates -->
+            <aside class="col-12 col-lg-3 sidebar">
+                <div class="card-pro p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0">Tables</h6>
+                        <div>
+                            <button id="addTableBtn" class="btn btn-sm btn-success">+ Table</button>
+                        </div>
+                    </div>
+                    <div id="tablesList" class="list-group mb-2" aria-live="polite"></div>
+
+                    <div class="d-flex gap-2 mb-2">
+                        <select id="templateSel" class="form-select form-select-sm">
+                            <option value="">Apply template...</option>
+                            <option value="users">Users</option>
+                            <option value="ecommerce">E-Commerce (Products/Orders)</option>
+                            <option value="blog">Blog (Posts/Authors/Comments)</option>
+                        </select>
+                        <button id="applyTpl" class="btn btn-sm btn-outline-primary">Apply</button>
+                    </div>
+
+                    <div class="mt-3">
+                        <small class="muted">Quick actions</small>
+                        <div class="d-flex gap-2 mt-2">
+                            <button id="clearAll" class="btn btn-sm btn-outline-warning">Clear</button>
+                            <button id="exportSqlQuick" class="btn btn-sm btn-outline-success">Export SQL</button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="card-pro p-3">
+                    <h6 class="mb-0">Inspector</h6>
+                    <p class="help-note">Select a table node in the ER canvas or pick a table to edit its columns,
+                        constraints and relationships.</p>
+                    <div class="mb-2">
+                        <label class="form-label small">SQL Dialect</label>
+                        <select id="sqlDialect" class="form-select form-select-sm">
+                            <option value="postgres">PostgreSQL</option>
+                            <option value="mysql">MySQL</option>
+                            <option value="sqlite">SQLite</option>
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small">Search tables</label>
+                        <input id="tableSearch" class="form-control form-control-sm" placeholder="Search..." />
+                    </div>
+                    <hr />
+                    <div class="small muted">Hints</div>
+                    <ul class="small muted mt-1">
+                        <li>Click a node on the ER to edit a table.</li>
+                        <li>Use templates to bootstrap schema.</li>
+                        <li>Auto-layout for neat diagrams.</li>
+                    </ul>
+                </div>
+            </aside>
+
+            <!-- Middle: Table editor -->
+            <section class="col-12 col-lg-4">
+                <div class="card-pro p-3">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div>
+                            <h5 class="mb-0">Table Editor</h5>
+                            <small class="muted">Create columns, keys, and relationships</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label small">Table name</label>
+                        <input id="tableName" class="form-control form-control-sm" placeholder="e.g. users" />
+                    </div>
+
+                    <div class="d-flex gap-2 align-items-center mb-2">
+                        <label class="form-label small mb-0">Columns</label>
+                        <button id="addColBtn" class="btn btn-sm btn-outline-success ms-auto">+ Column</button>
+                    </div>
+
+                    <div id="columnsEditor"
+                        style="max-height:38vh; overflow:auto; padding:8px; border-radius:8px; border:1px solid #eef2f6; background:#fff">
+                    </div>
+
+                    <div class="mt-3 d-flex gap-2">
+                        <button id="saveTableBtn" class="btn btn-success btn-sm">Save</button>
+                        <button id="deleteTableBtn" class="btn btn-outline-danger btn-sm">Delete</button>
+                        <button id="cloneTableBtn" class="btn btn-outline-secondary btn-sm">Clone</button>
+                        <button id="autoFKBtn" class="btn btn-outline-primary btn-sm ms-auto"
+                            title="Suggest FK by name">Suggest
+                            FK</button>
+                    </div>
+                </div>
+
+                <div class="card-pro p-3 mt-3">
+                    <h6 class="mb-0">Relationships</h6>
+                    <p class="small muted">Set foreign keys between tables</p>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <select id="colSourceTable" class="form-select form-select-sm"></select>
+                        </div>
+                        <div class="col-6">
+                            <select id="colSourceField" class="form-select form-select-sm"></select>
+                        </div>
+                        <div class="col-6 mt-2">
+                            <select id="colTargetTable" class="form-select form-select-sm"></select>
+                        </div>
+                        <div class="col-6 mt-2">
+                            <select id="colTargetField" class="form-select form-select-sm"></select>
+                        </div>
+                    </div>
+                    <div class="mt-2 d-flex gap-2"><button id="addRelBtn" class="btn btn-sm btn-outline-success">Add
+                            FK</button><button id="removeRelBtn" class="btn btn-sm btn-outline-danger">Remove
+                            FK</button></div>
+                </div>
+            </section>
+
+            <!-- Right: ER canvas & SQL -->
+            <section class="col-12 col-lg-5">
+                <div class="card-pro p-3 designer">
+                    <div class="d-flex align-items-start justify-content-between mb-2">
+                        <div>
+                            <h6 class="mb-0">ER Diagram</h6><small class="muted">Interactive visual editor</small>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button id="layoutBtn" class="btn btn-sm btn-outline-primary" title="Auto-layout"><i
+                                    class="bi bi-grid-3x3-gap-fill"></i></button>
+                            <button id="exportPng" class="btn btn-sm btn-outline-success" title="Download PNG"><i
+                                    class="bi bi-download"></i></button>
+                            <button id="zoomFit" class="btn btn-sm btn-outline-secondary" title="Fit view">Fit</button>
+                        </div>
+                    </div>
+                    <div id="erCanvas"></div>
+                </div>
+
+                <div class="card-pro p-3 mt-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0">SQL DDL</h6><small class="muted">Generated CREATE statements</small>
+                    </div>
+                    <pre id="sqlArea">-- SQL will appear here</pre>
+                    <div class="d-flex gap-2 mt-2">
+                        <button id="genSqlBtn" class="btn btn-success btn-sm">Generate SQL</button>
+                        <button id="copySqlBtn" class="btn btn-outline-light btn-sm">Copy</button>
+                        <a id="downloadSql" class="btn btn-sm btn-outline-success" download="schema.sql">Download</a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Column template modal (reusable) -->
+    <template id="colRowTemplate">
+        <div class="d-flex gap-2 align-items-center mb-2 p-2"
+            style="border-radius:6px;border:1px solid #eef2f6;background:#fbfcff">
+            <input class="col-name form-control form-control-sm" placeholder="column_name" />
+            <select class="col-type form-select form-select-sm">
+                <option value="INTEGER">INTEGER</option>
+                <option value="BIGINT">BIGINT</option>
+                <option value="SERIAL">SERIAL</option>
+                <option value="VARCHAR(255)">VARCHAR(255)</option>
+                <option value="TEXT">TEXT</option>
+                <option value="DATE">DATE</option>
+                <option value="TIMESTAMP">TIMESTAMP</option>
+                <option value="BOOLEAN">BOOLEAN</option>
+                <option value="DECIMAL(10,2)">DECIMAL(10,2)</option>
+            </select>
+            <div style="width:70px;text-align:center">
+                <label class="small muted mb-0">PK</label>
+                <input type="checkbox" class="col-pk form-check-input mt-1" />
+            </div>
+            <div style="width:80px;text-align:center">
+                <label class="small muted mb-0">Nullable</label>
+                <input type="checkbox" class="col-null form-check-input mt-1" checked />
+            </div>
+            <button class="btn btn-sm btn-outline-secondary col-fk">FK</button>
+            <button class="btn btn-sm btn-outline-danger col-del">✕</button>
+        </div>
+    </template>
+    <!-- FOOTER -->
+    <footer>
+        <p>&copy; 2025 Qbitrix DataLens | Client-Side Data Platform Suite. All rights reserved. @Author <a class=""
+                href="https://sachinkumarhebri.vercel.app" target="_blank">Sachin kumar</a></p>
+    </footer>
+
+    <script>
+        // Single-file improved implementation with fixed event wiring and simple undo/redo
+        document.addEventListener('DOMContentLoaded', () => {
+            // Model
+            const schema = { tables: {} };
+
+            // History for undo/redo
+            const history = { stack: [], idx: -1 };
+            function pushHistory() {
+                // store deep copy
+                history.stack = history.stack.slice(0, history.idx + 1);
+                history.stack.push(JSON.stringify(schema));
+                history.idx = history.stack.length - 1;
+                updateHistoryButtons();
+            }
+            function updateHistoryButtons() {
+                $('undoBtn').disabled = history.idx <= 0;
+                $('redoBtn').disabled = history.idx >= history.stack.length - 1 || history.idx === -1;
+            }
+            function undo() {
+                if (history.idx <= 0) return;
+                history.idx--; applyHistory();
+            }
+            function redo() {
+                if (history.idx >= history.stack.length - 1) return;
+                history.idx++; applyHistory();
+            }
+            function applyHistory() {
+                const snapshot = history.stack[history.idx];
+                if (!snapshot) return;
+                const obj = JSON.parse(snapshot);
+                // replace schema in place
+                Object.keys(schema).forEach(k => delete schema[k]);
+                Object.assign(schema, obj);
+                refreshTablesList(); updateAfterChange(false);
+                updateHistoryButtons();
+            }
+
+            // cytoscape registration
+            if (window.cytoscape && window.cytoscapeDagre) {
+                try { cytoscape.use(window.cytoscapeDagre); } catch (e) { /* already registered */ }
+            }
+
+            // DOM shortcuts
+            const $ = id => document.getElementById(id);
+            const tpl = id => document.getElementById(id);
+
+            // cytoscape instance
+            let cy = null;
+            function initCytoscape() {
+                const container = $('erCanvas');
+                if (!container) return console.error('ER canvas not found');
+                // clear container
+                container.innerHTML = '';
+                cy = cytoscape({
+                    container,
+                    elements: [],
+                    style: [
+                        { selector: 'node', style: { 'label': 'data(label)', 'text-wrap': 'wrap', 'text-valign': 'center', 'text-halign': 'center', 'background-color': '#ffffff', 'border-color': '#2563eb', 'border-width': 2, 'shape': 'round-rectangle', 'padding': '10px', 'font-size': 12 } },
+                        { selector: 'edge', style: { 'curve-style': 'bezier', 'target-arrow-shape': 'triangle', 'line-color': '#9ca3af', 'target-arrow-color': '#9ca3af', 'width': 2 } },
+                        { selector: '.pk', style: { 'border-color': '#0ea5a4', 'border-width': 3 } },
+                        { selector: '.fk', style: { 'line-style': 'dashed', 'line-color': '#f59e0b', 'target-arrow-color': '#f59e0b' } }
+                    ],
+                    wheelSensitivity: 0.2
+                });
+
+                // interaction: click node to edit
+                cy.on('tap', 'node', evt => {
+                    const id = evt.target.id().replace(/^n_/, ''); loadTableToEditor(id);
+                });
+
+                // handle resize
+                window.addEventListener('resize', () => { try { if (cy) cy.resize(); } catch (e) { } });
+            }
+
+            // UI helpers
+            function el(tag, attrs = {}) { const e = document.createElement(tag); Object.entries(attrs).forEach(([k, v]) => { if (k === 'html') e.innerHTML = v; else e.setAttribute(k, v); }); return e }
+
+            // Render table list
+            function refreshTablesList(filter = '') {
+                const list = $('tablesList'); list.innerHTML = '';
+                Object.keys(schema.tables).filter(tn => tn.includes(filter)).forEach(tn => {
+                    const t = schema.tables[tn];
+                    const li = el('button', { class: 'list-group-item list-group-item-action table-item', type: 'button' });
+                    li.innerHTML = `<div><strong>${tn}</strong><div class="table-preview">${Object.keys(t.columns).length} columns • PK: ${t.pk || '-'}</div></div><div><span class="chip">${Object.keys(t.columns).length}</span></div>`;
+                    li.addEventListener('click', () => loadTableToEditor(tn));
+                    list.appendChild(li);
+                });
+            }
+
+            // Column row renderer
+            function renderColumnRow(tableName = '', colName = '', meta = { type: 'VARCHAR(255)', nullable: true, pk: false }) {
+                const tplNode = tpl('colRowTemplate').content.firstElementChild.cloneNode(true);
+                const nameEl = tplNode.querySelector('.col-name'); const typeEl = tplNode.querySelector('.col-type'); const pkEl = tplNode.querySelector('.col-pk'); const nullEl = tplNode.querySelector('.col-null'); const fkBtn = tplNode.querySelector('.col-fk'); const delBtn = tplNode.querySelector('.col-del');
+                nameEl.value = colName; typeEl.value = meta.type || 'VARCHAR(255)'; pkEl.checked = !!meta.pk; nullEl.checked = meta.nullable !== false;
+
+                delBtn.addEventListener('click', () => tplNode.remove());
+                fkBtn.addEventListener('click', () => {
+                    // when user clicks FK on a column row open relationship UI and pre-select values
+                    populateRelSelectors();
+                    $('colSourceTable').value = tableName;
+                    // ensure fields are filled
+                    fillFields('colSourceTable', 'colSourceField');
+                    setTimeout(() => { if (nameEl.value) $('colSourceField').value = nameEl.value; }, 20);
+                });
+
+                return tplNode;
+            }
+
+            // Load table into editor
+            function loadTableToEditor(name) {
+                const t = schema.tables[name]; if (!t) return;
+                $('tableName').value = name;
+                const ce = $('columnsEditor'); ce.innerHTML = '';
+                Object.entries(t.columns).forEach(([cn, meta]) => ce.appendChild(renderColumnRow(name, cn, meta)));
+            }
+
+            // Save table
+            $('saveTableBtn').addEventListener('click', () => {
+                const name = $('tableName').value.trim(); if (!name) return alert('Provide a table name');
+                const ce = $('columnsEditor'); const rows = Array.from(ce.children);
+                const cols = {};
+                let pkSet = null;
+                rows.forEach(r => {
+                    const n = r.querySelector('.col-name').value.trim();
+                    const t = r.querySelector('.col-type').value;
+                    const pk = r.querySelector('.col-pk').checked;
+                    const nullable = r.querySelector('.col-null').checked;
+                    if (!n) return;
+                    // preserve fk info if present in original schema
+                    const existing = schema.tables[name] && schema.tables[name].columns[n] ? schema.tables[name].columns[n].fk : undefined;
+                    cols[n] = { type: t, nullable, pk };
+                    if (existing) cols[n].fk = existing;
+                    if (pk) pkSet = n;
+                });
+                // if table renamed, we need to move entry
+                const oldName = Object.keys(schema.tables).find(k => k === name) ? name : null;
+                // create/replace
+                schema.tables[name] = schema.tables[name] || { columns: {} };
+                schema.tables[name].columns = cols;
+                if (pkSet) schema.tables[name].pk = pkSet; else delete schema.tables[name].pk;
+
+                // if user changed name (rare), handle rename: -- skipped as we overwrite by name
+
+                pushHistory();
+                refreshTablesList(); updateAfterChange();
+            });
+
+            // Add table
+            $('addTableBtn').addEventListener('click', () => {
+                let base = 'table', i = 1; while (schema.tables[base + i]) i++; const name = base + i;
+                schema.tables[name] = { columns: { id: { type: 'INTEGER', nullable: false, pk: true } }, pk: 'id' };
+                pushHistory();
+                refreshTablesList(); updateAfterChange(); loadTableToEditor(name);
+            });
+
+            // Add column UI
+            $('addColBtn').addEventListener('click', () => {
+                const tn = $('tableName').value || Object.keys(schema.tables)[0] || '';
+                const ce = $('columnsEditor'); ce.appendChild(renderColumnRow(tn, 'col' + Math.floor(Math.random() * 900 + 100), { type: 'VARCHAR(255)', nullable: true }));
+            });
+
+            // Delete table
+            $('deleteTableBtn').addEventListener('click', () => {
+                const name = $('tableName').value.trim(); if (!name || !schema.tables[name]) return; if (!confirm('Delete table ' + name + ' ?')) return;
+                // remove any fk pointing to this table
+                Object.values(schema.tables).forEach(t => { Object.entries(t.columns).forEach(([c, m]) => { if (m && m.fk && m.fk.table === name) delete m.fk; }) });
+                delete schema.tables[name];
+                pushHistory();
+                refreshTablesList(); updateAfterChange(); $('tableName').value = ''; $('columnsEditor').innerHTML = '';
+            });
+
+            // Clone
+            $('cloneTableBtn').addEventListener('click', () => {
+                const name = $('tableName').value.trim(); if (!name || !schema.tables[name]) return; let i = 1; while (schema.tables[name + '_copy' + i]) i++; const newName = name + '_copy' + i; schema.tables[newName] = JSON.parse(JSON.stringify(schema.tables[name])); pushHistory(); refreshTablesList(); updateAfterChange(); loadTableToEditor(newName);
+            });
+
+            // Populate relationship selectors
+            function populateRelSelectors() {
+                const sourceSel = $('colSourceTable'); const targetSel = $('colTargetTable');
+                [sourceSel, targetSel].forEach(sel => { sel.innerHTML = ''; Object.keys(schema.tables).forEach(tn => sel.appendChild(el('option', { value: tn, html: tn }))); });
+                // update fields
+                fillFields('colSourceTable', 'colSourceField'); fillFields('colTargetTable', 'colTargetField');
+            }
+
+            function fillFields(tableSelId, fieldSelId) {
+                const tsel = $(tableSelId); const fsel = $(fieldSelId);
+                fsel.innerHTML = '';
+                const cols = schema.tables[tsel.value] ? schema.tables[tsel.value].columns : {};
+                Object.keys(cols).forEach(c => fsel.appendChild(el('option', { value: c, html: c })));
+            }
+
+            // Relationships add/remove
+            $('addRelBtn').addEventListener('click', () => {
+                const sT = $('colSourceTable').value, sF = $('colSourceField').value, tT = $('colTargetTable').value, tF = $('colTargetField').value;
+                if (!sT || !sF || !tT || !tF) return alert('Select source and target');
+                schema.tables[sT].columns[sF].fk = { table: tT, column: tF };
+                pushHistory(); updateAfterChange();
+            });
+            $('removeRelBtn').addEventListener('click', () => {
+                const sT = $('colSourceTable').value, sF = $('colSourceField').value; if (!sT || !sF) return; delete schema.tables[sT].columns[sF].fk; pushHistory(); updateAfterChange();
+            });
+
+            // Suggest FK by naming convention
+            $('autoFKBtn').addEventListener('click', () => {
+                Object.entries(schema.tables).forEach(([tn, t]) => {
+                    Object.entries(t.columns).forEach(([cn, meta]) => {
+                        if (/_id$/.test(cn) && !meta.fk) {
+                            const ref = cn.replace(/_id$/, 's'); if (schema.tables[ref] && schema.tables[ref].pk) { meta.fk = { table: ref, column: schema.tables[ref].pk }; }
+                        }
+                    });
+                }); pushHistory(); updateAfterChange();
+            });
+
+            // Render ER
+            function renderER() {
+                const elements = [];
+                Object.entries(schema.tables).forEach(([tn, t]) => {
+                    const lines = [tn]; Object.entries(t.columns).forEach(([cn, meta]) => {
+                        const pkMark = (t.pk === cn) ? ' 🔑' : '';
+                        const fkMark = meta.fk ? ' ↪' : '';
+                        lines.push(cn + ' : ' + meta.type + (meta.nullable ? '' : ' NOT NULL') + pkMark + fkMark);
+                    });
+                    elements.push({ data: { id: 'n_' + tn, label: lines.join('\n') }, classes: t.pk ? 'pk' : '' });
+                });
+                // edges
+                Object.entries(schema.tables).forEach(([tn, t]) => {
+                    Object.entries(t.columns).forEach(([cn, meta]) => {
+                        if (meta.fk) { elements.push({ data: { id: 'e_' + tn + '_' + cn, source: 'n_' + tn, target: 'n_' + meta.fk.table }, classes: 'fk' }); }
+                    });
+                });
+
+                if (!cy) initCytoscape();
+                cy.elements().remove(); cy.add(elements);
+                try { cy.layout({ name: 'dagre', nodeSep: 60, rankSep: 80 }).run(); } catch (e) { try { cy.layout({ name: 'grid' }).run(); } catch (e) { /* ignore */ } }
+                setTimeout(() => { try { cy.fit(50); } catch (e) { } }, 200);
+            }
+
+            // SQL generator
+            function generateSQL() {
+                const dialect = $('sqlDialect').value || 'postgres'; const parts = [];
+                Object.entries(schema.tables).forEach(([tn, t]) => {
+                    const cols = [];
+                    Object.entries(t.columns).forEach(([cn, meta]) => {
+                        let type = meta.type;
+                        // tiny dialect adjustments
+                        if (dialect === 'mysql') { type = type.replace('SERIAL', 'BIGINT AUTO_INCREMENT'); }
+                        if (dialect === 'sqlite') { type = type.replace(/VARCHAR\(.+\)/, 'TEXT'); }
+                        const nullable = meta.nullable === false ? ' NOT NULL' : '';
+                        cols.push(`  \`${cn}\` ${type}${nullable}`);
+                    });
+                    let ddl = `CREATE TABLE \`${tn}\` (\n${cols.join(',\n')}`;
+                    if (t.pk) { ddl += `,\n  PRIMARY KEY (\`${t.pk}\`)`; }
+                    Object.entries(t.columns).forEach(([cn, meta]) => { if (meta.fk) { ddl += `,\n  FOREIGN KEY (\`${cn}\`) REFERENCES \`${meta.fk.table}\`(\`${meta.fk.column}\`)`; } });
+                    ddl += '\n);\n'; parts.push(ddl);
+                });
+                return parts.join('\n');
+            }
+
+            // update SQL area
+            function updateSqlArea() { const sql = generateSQL(); $('sqlArea').textContent = sql || '-- SQL will appear here'; $('downloadSql').href = 'data:text/sql;charset=utf-8,' + encodeURIComponent($('sqlArea').textContent); }
+
+            // update after any change
+            function updateAfterChange(push = true) { populateRelUI(); renderER(); refreshTablesList($('tableSearch').value || ''); updateSqlArea(); if (push) pushHistory(); }
+
+            // populate relation UI and choices
+            function populateRelUI() {
+                const tables = Object.keys(schema.tables);
+                ['colSourceTable', 'colTargetTable'].forEach(id => {
+                    const sel = $(id); const cur = sel.value; sel.innerHTML = '';
+                    tables.forEach(tn => sel.appendChild(el('option', { value: tn, html: tn })));
+                    if (tables.includes(cur)) sel.value = cur; else if (tables[0]) sel.value = tables[0];
+                });
+                ['colSourceField', 'colTargetField'].forEach(id => $(id).innerHTML = '');
+                // ensure fields are filled for current selections
+                fillFields('colSourceTable', 'colSourceField'); fillFields('colTargetTable', 'colTargetField');
+            }
+
+            // fill fields for table selects
+            $('colSourceTable').addEventListener('change', () => fillFields('colSourceTable', 'colSourceField'));
+            $('colTargetTable').addEventListener('change', () => fillFields('colTargetTable', 'colTargetField'));
+
+            // generator and clipboard
+            $('genSqlBtn').addEventListener('click', () => { updateSqlArea(); alert('SQL generated'); });
+            $('copySqlBtn').addEventListener('click', () => { navigator.clipboard.writeText($('sqlArea').textContent).then(() => alert('Copied to clipboard')).catch(() => alert('Copy failed')); });
+
+            // layout & export
+            $('layoutBtn').addEventListener('click', () => { try { if (cy) cy.layout({ name: 'dagre', nodeSep: 60, rankSep: 80 }).run(); } catch (e) { alert('Layout failed'); } });
+            $('exportPng').addEventListener('click', () => { try { const png = cy.png({ full: true, scale: 2 }); const a = document.createElement('a'); a.href = png; a.download = 'er-diagram.png'; a.click(); } catch (e) { alert('Export failed'); } });
+            $('zoomFit').addEventListener('click', () => { try { if (cy) cy.fit(50); } catch (e) { } });
+
+            // templates
+            $('applyTpl').addEventListener('click', () => {
+                const v = $('templateSel').value; if (!v) return;
+                if (v === 'users') {
+                    schema.tables['users'] = { columns: { id: { type: 'SERIAL', nullable: false, pk: true }, name: { type: 'VARCHAR(255)', nullable: false }, email: { type: 'VARCHAR(255)', nullable: false } }, pk: 'id' };
+                }
+                if (v === 'ecommerce') {
+                    schema.tables['products'] = { columns: { product_id: { type: 'SERIAL', pk: true }, name: { type: 'VARCHAR(255)' }, price: { type: 'DECIMAL(10,2)' } }, pk: 'product_id' };
+                    schema.tables['orders'] = { columns: { order_id: { type: 'SERIAL', pk: true }, user_id: { type: 'INTEGER' }, total: { type: 'DECIMAL(10,2)' } }, pk: 'order_id' };
+                    schema.tables['order_items'] = { columns: { id: { type: 'SERIAL', pk: true }, order_id: { type: 'INTEGER', fk: { table: 'orders', column: 'order_id' } }, product_id: { type: 'INTEGER', fk: { table: 'products', column: 'product_id' } }, qty: { type: 'INTEGER' } }, pk: 'id' };
+                }
+                if (v === 'blog') {
+                    schema.tables['authors'] = { columns: { id: { type: 'SERIAL', pk: true }, name: { type: 'VARCHAR(255)' } }, pk: 'id' };
+                    schema.tables['posts'] = { columns: { id: { type: 'SERIAL', pk: true }, author_id: { type: 'INTEGER', fk: { table: 'authors', column: 'id' } }, title: { type: 'VARCHAR(255)' }, content: { type: 'TEXT' } }, pk: 'id' };
+                    schema.tables['comments'] = { columns: { id: { type: 'SERIAL', pk: true }, post_id: { type: 'INTEGER', fk: { table: 'posts', column: 'id' } }, body: { type: 'TEXT' } }, pk: 'id' };
+                }
+                updateAfterChange();
+            });
+
+            // quick export SQL
+            $('exportSqlQuick').addEventListener('click', () => { updateSqlArea(); const a = document.createElement('a'); a.href = 'data:text/sql;charset=utf-8,' + encodeURIComponent($('sqlArea').textContent); a.download = 'schema.sql'; a.click(); });
+
+            // save/load JSON
+            $('saveJson').addEventListener('click', () => { const json = JSON.stringify(schema, null, 2); const a = document.createElement('a'); a.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(json); a.download = 'schema.json'; a.click(); });
+
+            $('loadJsonBtn').addEventListener('click', () => {
+                const input = document.createElement('input'); input.type = 'file'; input.accept = '.json'; input.onchange = e => {
+                    const file = e.target.files[0]; const reader = new FileReader(); reader.onload = ev => {
+                        try {
+                            const obj = JSON.parse(ev.target.result); if (obj.tables) { // replace schema
+                                Object.keys(schema).forEach(k => delete schema[k]); Object.assign(schema, obj); refreshTablesList(); updateAfterChange(); alert('Loaded');
+                            } else alert('Invalid schema file');
+                        } catch (err) { alert('Invalid JSON'); }
+                    }; reader.readAsText(file);
+                }; input.click();
+            });
+
+            // search
+            $('tableSearch').addEventListener('input', e => refreshTablesList(e.target.value));
+
+            // clear all
+            $('clearAll').addEventListener('click', () => { if (!confirm('Clear entire schema?')) return; Object.keys(schema.tables).forEach(k => delete schema.tables[k]); pushHistory(); refreshTablesList(); updateAfterChange(); });
+
+            // undo/redo
+            $('undoBtn').addEventListener('click', () => undo());
+            $('redoBtn').addEventListener('click', () => redo());
+
+            // initial
+            initCytoscape(); refreshTablesList(); updateAfterChange(false); // don't push twice
+            pushHistory();
+            populateRelSelectors();
+
+        });
+    </script>
+    <script src="/app.js"></script>
+</body>
+
+</html>

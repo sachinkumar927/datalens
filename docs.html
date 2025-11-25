@@ -1,0 +1,751 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>DataLens — Documentation & Help</title>
+    <link rel="icon" type="image/png" href="assets/DataLensIco.ico" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #f6f8fb;
+            --card: #ffffff;
+            --muted: #6b7280;
+            --accent: #0ea5e9;
+            --surface: #eef2f7;
+            --glass: rgba(255, 255, 255, 0.6);
+            --radius: 12px;
+            --max-width: 1200px;
+            --dark-bg: #0b1220;
+            --dark-card:  linear-gradient(180deg, rgba(184, 236, 201, 0.9), rgba(255, 255, 255, 0.82));
+            --dark-muted: #94a3b8;
+            --dark-surface: #081123;
+        }
+
+        /* Dark mode flag */
+        html[data-theme='dark'] {
+            --bg: var(--dark-bg);
+            --card: var(--dark-card);
+            --muted: var(--dark-muted);
+            --surface: var(--dark-surface);
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+            background: var(--bg);
+            color: #0f1724;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
+            padding-bottom: 40px;
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        /* ==== HEADER ==== */
+        .navbar {
+            background: linear-gradient(180deg, rgba(184, 236, 201, 0.9), rgba(136, 236, 194, 0.8));
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: #000000 !important;
+            font-size: 1.4rem;
+        }
+
+        .nav-link {
+            color: #000000 !important;
+            margin-right: 1rem;
+            transition: 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #facc15 !important;
+        }
+
+        /* Top bar */
+        .topbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            background: linear-gradient(180deg, rgba(184, 236, 201, 0.9), rgba(136, 236, 194, 0.8));
+            border-bottom: 1px solid rgba(15, 23, 36, 0.04);
+        }
+
+        .brand {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-weight: 700;
+            color: #022260
+        }
+
+        .brand img {
+            height: 40px
+        }
+
+        .top-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 8px;
+            align-items: center
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            border: 0;
+            background: transparent;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn.secondary {
+            background: transparent
+        }
+
+        .pill {
+            padding: 6px 10px;
+            background: var(--card);
+            border-radius: 999px;
+            border: 1px solid rgba(15, 23, 36, 0.06)
+        }
+
+        .search-global {
+            flex: 1;
+            max-width: 520px;
+            margin: 0 16px
+        }
+
+        /* Layout */
+        .container {
+            max-width: var(--max-width);
+            margin: 24px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 20px;
+        }
+
+        /* Collapse to single column on small screens */
+        @media (max-width:900px) {
+            .container {
+                grid-template-columns: 1fr
+            }
+
+            .toc {
+                order: -1;
+                position: relative;
+                transform: none;
+                width: 100%;
+            }
+
+            .toc .toc-panel {
+                display: flex;
+                gap: 8px;
+                overflow: auto;
+                padding: 12px
+            }
+
+            .toc .toc-list {
+                display: flex;
+                gap: 8px
+            }
+        }
+
+        /* TOC (left) */
+        .toc {
+            position: sticky;
+            top: 18px;
+            align-self: start;
+        }
+
+        .toc-panel {
+            background: linear-gradient(180deg, rgba(6, 12, 34, 0.03), rgba(255, 255, 255, 0.6));
+            border-radius: var(--radius);
+            padding: 18px;
+            border: 1px solid rgba(15, 23, 36, 0.04);
+        }
+
+        .toc-title {
+            font-weight: 700;
+            margin-bottom: 10px
+        }
+
+        .toc-list {
+            display: block;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .toc-list a {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 10px;
+            border-radius: 10px;
+            color: inherit;
+            text-decoration: none;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+
+        .toc-list a.active {
+            background: linear-gradient(90deg, var(--accent), #60a5fa);
+            color: #fff;
+            box-shadow: 0 6px 18px rgba(14, 165, 233, 0.12)
+        }
+
+        .toc-list a:hover {
+            background: rgba(14, 165, 233, 0.06);
+            color: inherit
+        }
+
+        /* Content */
+        main.docs {
+            min-height: 420px;
+        }
+
+        .hero {
+            background: linear-gradient(180deg, rgba(184, 236, 201, 0.9), rgba(255, 255, 255, 0.82));
+            color: #000000;
+            padding: 26px;
+            border-radius: 14px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            box-shadow: 0 12px 36px rgba(2, 34, 96, 0.08);
+        }
+
+        .hero h1 {
+            margin: 0;
+            font-size: 1.2rem
+        }
+
+        .hero p {
+            margin: 0;
+            opacity: 0.95
+        }
+
+        section.doc-section {
+            margin-top: 22px;
+            padding: 20px;
+            background: var(--card);
+            border-radius: 12px;
+            border: 1px solid rgba(15, 23, 36, 0.04)
+        }
+
+        .section-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px
+        }
+
+        .section-head h2 {
+            margin: 0;
+            font-size: 1.05rem
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: .95rem
+        }
+
+        /* Cards grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            margin-top: 12px
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(15, 23, 36, 0.03);
+        }
+
+        .card h4 {
+            margin: 0 0 8px 0;
+            font-size: 0.98rem
+        }
+
+        /* code block */
+        pre.code-block {
+            position: relative;
+            background: #0b1220;
+            color: #e6eef8;
+            padding: 12px;
+            border-radius: 8px;
+            overflow: auto;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace
+        }
+
+        pre.code-block .copy-btn {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 6px;
+            border: 0;
+            color: #fff;
+            cursor: pointer
+        }
+
+        .meta {
+            font-size: .9rem;
+            color: var(--muted)
+        }
+
+        /* focus */
+        a:focus,
+        button:focus,
+        input:focus {
+            outline: 3px solid rgba(14, 165, 233, 0.10);
+            outline-offset: 2px
+        }
+
+        /* small helpers */
+        .kbd {
+            background: rgba(15, 23, 36, 0.06);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: .85rem
+        }
+
+        /* FOOTER */
+        footer {
+            background: linear-gradient(180deg, rgba(184, 236, 201, 0.9), rgba(136, 236, 194, 0.8));
+            color: #000000;
+            padding: 20px 20px;
+            text-align: center;
+        }
+
+        footer a {
+            color: #ff6600;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Topbar -->
+    <header class="topbar" role="banner">
+        <div class="brand" aria-hidden="false">
+            <img src="assets/DataLensLogo.png" alt="DataLens">
+            <div>
+                <div style="font-size:16px">DataLens</div>
+                <small style="color:var(--muted);font-weight:600">Client-Side Data Platform</small>
+            </div>
+        </div>
+
+        <div class="search-global" style="flex:1">
+            <input id="globalSearch" aria-label="Search documentation" oninput="filterSections()"
+                placeholder="Search docs, e.g. 'upload', 'filters', 'export'..."
+                style="width:100%; padding:10px 14px; border-radius:999px; border:1px solid rgba(15,23,36,0.06); background:var(--card)" />
+        </div>
+
+        <div class="top-actions" role="group" aria-label="Actions">
+            <button class="btn pill" onclick="window.location='index.html'">
+                <i class="bi bi-house-door"></i> Home
+            </button>
+        </div>
+    </header>
+
+    <!-- Main container -->
+    <div class="container" role="main">
+
+        <!-- Left TOC -->
+        <aside class="toc" aria-label="Table of contents">
+            <nav class="toc-panel" id="tocPanel">
+                <div class="toc-title">Contents</div>
+                <ul class="toc-list" id="tocList">
+                    <li><a href="#getting-started" data-target="getting-started"><i class="bi bi-play-circle-fill"
+                                style="width:18px"></i> Getting started</a></li>
+                    <li><a href="#upload" data-target="upload"><i class="bi bi-cloud-upload-fill"
+                                style="width:18px"></i> File upload</a></li>
+                    <li><a href="#data-inspection" data-target="data-inspection"><i class="bi bi-search"
+                                style="width:18px"></i> Data inspection</a></li>
+                    <li><a href="#search-filters" data-target="search-filters"><i class="bi bi-funnel-fill"
+                                style="width:18px"></i> Search & filters</a></li>
+                    <li><a href="#visualization" data-target="visualization"><i class="bi bi-bar-chart-line"
+                                style="width:18px"></i> Quick charts</a></li>
+                    <li><a href="#api-studio" data-target="api-studio"><i class="bi bi-code-slash"
+                                style="width:18px"></i> API Studio</a></li>
+                    <li><a href="#export" data-target="export"><i class="bi bi-download" style="width:18px"></i> Export
+                            & reset</a></li>
+                    <li><a href="#privacy" data-target="privacy"><i class="bi bi-shield-lock-fill"
+                                style="width:18px"></i> Privacy</a></li>
+                    <li><a href="#faq" data-target="faq"><i class="bi bi-question-circle-fill" style="width:18px"></i>
+                            FAQ</a></li>
+                </ul>
+
+                <div style="margin-top:12px" class="meta">
+                    <div><strong>Version</strong> 1.0.0.0</div>
+                    <div style="font-size:.85rem;margin-top:6px">Last updated: <time datetime="2025-11-25">Nov 25,
+                            2025</time></div>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Right: Docs content -->
+        <main class="docs" id="docsContent">
+
+            <!-- Hero -->
+            <div class="hero" role="region" aria-label="Guide hero">
+                <div style="flex:1">
+                    <h1>Welcome to DataLens — Quick start & help</h1>
+                    <p class="muted" style="margin-top:8px">Client-side data exploration, API testing and light ETL —
+                        fast, private, and built for developers & analysts.</p>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:10px; align-items:flex-end">
+                    <button class="btn pill" onclick="scrollToSection('getting-started')"><i
+                            class="bi bi-rocket-takeoff"></i> Get Started</button>
+                    <button class="btn" onclick="copySupportEmail()"><i class="bi bi-envelope-fill"></i> Copy Support
+                        Email</button>
+                </div>
+            </div>
+
+            <!-- Getting started -->
+            <section id="getting-started" class="doc-section" data-search="getting started quick start overview">
+                <div class="section-head">
+                    <h2>Getting started</h2>
+                    <div class="muted">Two minute setup • No backend required</div>
+                </div>
+
+                <p class="muted" style="margin-top:10px">
+                    1. Open <span class="kbd">Data Explorer</span> → Upload a dataset (CSV/XLSX/JSON).<br>
+                    2. Use the global search to filter rows in real-time.<br>
+                    3. Create quick charts or export visible rows.
+                </p>
+
+                <div class="grid" style="margin-top:14px">
+                    <div class="card">
+                        <h4>Sample dataset</h4>
+                        <p class="muted">Use "Sample dataset" to try features instantly without uploading files.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Persist</h4>
+                        <p class="muted">Enable local persistence to preserve the dataset in your browser (clears on
+                            user action).</p>
+                    </div>
+                    <div class="card">
+                        <h4>Secure by default</h4>
+                        <p class="muted">All processing is local. Remote APIs are only called if you make requests.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Upload -->
+            <section id="upload" class="doc-section" data-search="upload csv xlsx json supported formats">
+                <div class="section-head">
+                    <h2>File upload & supported formats</h2>
+                    <div class="muted">CSV • XLSX • JSON • TXT • XML</div>
+                </div>
+
+                <p class="muted" style="margin-top:12px">
+                    Drag & drop or click the upload area. DataLens auto-detects encodings and column types. For Excel
+                    files, a sheet chooser will appear — the first sheet is chosen by default.
+                </p>
+
+                <div style="margin-top:12px">
+                    <pre class="code-block" id="upload-code">
+{/* Example: programmatic import (client-side) */}
+// read file input, parse and attach to explorer
+const reader = new FileReader();
+reader.onload = (e) => {
+const text = e.target.result;
+// use CSV/JSON parser (example)
+const rows = parseCSV(text);
+loadIntoExplorer(rows);
+};
+</pre>
+                    <button class="copy-btn" onclick="copyCode('upload-code')" title="Copy code">Copy</button>
+                </div>
+            </section>
+
+            <!-- Data inspection -->
+            <section id="data-inspection" class="doc-section" data-search="inspect preview rows columns types schema">
+                <div class="section-head">
+                    <h2>Data inspection</h2>
+                    <div class="muted">Preview • Types • Row & column counts</div>
+                </div>
+
+                <p class="muted" style="margin-top:10px">
+                    Click any column header to view summary stats (unique, nulls, sample values). Use the column menu to
+                    rename, change type, or hide a column.
+                </p>
+
+                <div class="grid">
+                    <div class="card">
+                        <h4>Summary panel</h4>
+                        <p class="muted">Shows min/max, mean, top values and sample rows for the selected column.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Schemas</h4>
+                        <p class="muted">Generate a lightweight schema preview that can be exported as JSON schema.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Search & filters -->
+            <section id="search-filters" class="doc-section" data-search="filter global search column filters advanced">
+                <div class="section-head">
+                    <h2>Search & Filters</h2>
+                    <div class="muted">Global search + column filters</div>
+                </div>
+
+                <p class="muted" style="margin-top:10px">
+                    Global search scans visible columns. Column filters allow exact match, contains, numeric ranges, and
+                    date ranges. Combine multiple filters to refine results.
+                </p>
+
+                <div class="grid">
+                    <div class="card">
+                        <h4>Filter types</h4>
+                        <p class="muted">Text: contains/equals • Number: range • Date: calendar picker</p>
+                    </div>
+                    <div class="card">
+                        <h4>Save & reuse</h4>
+                        <p class="muted">Saved filters can be named and reapplied to new datasets.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Visualization -->
+            <section id="visualization" class="doc-section"
+                data-search="charts quick charts bar line pie visualization">
+                <div class="section-head">
+                    <h2>Quick charts</h2>
+                    <div class="muted">Instant bar/line/pie visualizations</div>
+                </div>
+
+                <p class="muted" style="margin-top:10px">
+                    Select a categorical column and a numeric column then click <b>Chart</b>. Charts render client-side
+                    and can be exported as PNG.
+                </p>
+            </section>
+
+            <!-- API Studio -->
+            <section id="api-studio" class="doc-section" data-search="api studio test endpoints headers response mock">
+                <div class="section-head">
+                    <h2>API Studio</h2>
+                    <div class="muted">Inspect headers, body, latency, and preview JSON</div>
+                </div>
+
+                <p class="muted" style="margin-top:10px">
+                    Use the API Studio to craft requests (GET/POST), attach custom headers, send sample payloads and
+                    inspect responses. Responses can be imported into the Data Explorer for analysis.
+                </p>
+
+                <div class="card" style="margin-top:12px">
+                    <h4>Quick tip</h4>
+                    <p class="muted">Enable <b>Save requests</b> to reuse common test scenarios across sessions.</p>
+                </div>
+            </section>
+
+            <!-- Export & reset -->
+            <section id="export" class="doc-section" data-search="export csv xlsx download reset filters">
+                <div class="section-head">
+                    <h2>Export & Reset</h2>
+                    <div class="muted">CSV / XLSX / Original file</div>
+                </div>
+
+                <p class="muted" style="margin-top:10px">
+                    Export only what you see (visible columns & active filters) or download the original file. Use Reset
+                    to clear filters and revert to the raw view.
+                </p>
+            </section>
+
+            <!-- Privacy -->
+            <section id="privacy" class="doc-section" data-search="privacy local processing localstorage no upload">
+                <div class="section-head">
+                    <h2>Privacy & Security</h2>
+                    <div class="muted">Everything runs in your browser</div>
+                </div>
+
+                <p class="muted" style="margin-top:10px">
+                    DataLens does not upload your data by default. LocalStorage persistence is optional and
+                    user-controlled. If you call external APIs from the API Studio, those requests go to the target
+                    servers (be mindful of sensitive payloads).
+                </p>
+            </section>
+
+            <!-- FAQ -->
+            <section id="faq" class="doc-section" data-search="faq support contact clear storage persist">
+                <div class="section-head">
+                    <h2>FAQ & Support</h2>
+                    <div class="muted">Quick answers</div>
+                </div>
+
+                <div style="margin-top:12px">
+                    <details style="margin-bottom:8px">
+                        <summary><strong>How do I clear persisted datasets?</strong></summary>
+                        <p class="muted" style="margin-top:8px">Open Settings → Storage → Clear persisted datasets.</p>
+                    </details>
+
+                    <details style="margin-bottom:8px">
+                        <summary><strong>Where does my data go?</strong></summary>
+                        <p class="muted" style="margin-top:8px">Unless you call a remote API, all data stays in browser
+                            memory/localStorage.</p>
+                    </details>
+
+                    <details>
+                        <summary><strong>Contact support</strong></summary>
+                        <p class="muted" style="margin-top:8px">Email <code id="supportEmail">sachinhebri927@gmail.com</code>
+                            or open an issue on your workspace.</p>
+                    </details>
+                </div>
+            </section>
+
+        </main>
+
+    </div>
+    <!-- FOOTER -->
+    <footer>
+        <p>&copy; 2025 Qbitrix DataLens | Client-Side Data Platform Suite. All rights reserved. @Author <a class=""
+                href="https://sachinkumarhebri.vercel.app" target="_blank">Sachin kumar</a></p>
+    </footer>
+
+    <!-- Minimal JS -->
+    <script>
+        // Theme handling
+        (function () {
+            const themeToggle = document.getElementById('themeToggle');
+            const icon = document.getElementById('themeIcon');
+            const stored = localStorage.getItem('datalens_theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const initial = stored || (prefersDark ? 'dark' : 'light');
+            if (initial === 'dark') document.documentElement.setAttribute('data-theme', 'dark'), icon.className = 'bi bi-sun-fill';
+        })();
+
+        function toggleTheme() {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            if (isDark) {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('datalens_theme', 'light');
+                document.getElementById('themeIcon').className = 'bi bi-moon-fill';
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('datalens_theme', 'dark');
+                document.getElementById('themeIcon').className = 'bi bi-sun-fill';
+            }
+        }
+
+        // TOC active state on scroll
+        const tocLinks = document.querySelectorAll('#tocList a');
+        const sections = Array.from(document.querySelectorAll('main.docs section'));
+        function onScroll() {
+            const scrollPos = window.scrollY + 140; // offset
+            let current = sections[0]?.id || '';
+            for (const s of sections) {
+                if (document.getElementById(s.id).offsetTop <= scrollPos) current = s.id;
+            }
+            tocLinks.forEach(a => a.classList.toggle('active', a.dataset.target === current));
+        }
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+
+        // Scroll to section
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
+        }
+        document.querySelectorAll('#tocList a').forEach(a => {
+            a.addEventListener('click', (e) => {
+                e.preventDefault();
+                scrollToSection(a.dataset.target);
+            })
+        });
+
+        // Global search filter for sections and TOC
+        function filterSections() {
+            const q = (document.getElementById('globalSearch').value || '').trim().toLowerCase();
+            const docs = document.querySelectorAll('main.docs section');
+            docs.forEach(sec => {
+                const text = (sec.dataset.search || '') + ' ' + (sec.innerText || '');
+                const show = text.toLowerCase().includes(q);
+                sec.style.display = show ? '' : 'none';
+            });
+            // TOC linking visibility
+            document.querySelectorAll('#tocList a').forEach(a => {
+                const t = a.dataset.target;
+                const el = document.getElementById(t);
+                a.style.display = (el && el.style.display !== 'none') ? '' : 'none';
+            });
+        }
+
+        // copy code snippet
+        function copyCode(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const text = el.innerText || el.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Copied to clipboard');
+            }).catch(() => showToast('Copy failed'));
+        }
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.textContent = msg;
+            t.style.position = 'fixed'; t.style.right = '18px'; t.style.bottom = '18px';
+            t.style.background = 'rgba(15,23,36,0.9)'; t.style.color = '#fff'; t.style.padding = '10px 14px';
+            t.style.borderRadius = '8px'; t.style.zIndex = 9999;
+            document.body.appendChild(t);
+            setTimeout(() => t.style.opacity = '0.0', 1400);
+            setTimeout(() => t.remove(), 1800);
+        }
+
+        // copy support email quick action
+        function copySupportEmail() {
+            const email = 'sachinhebri927@gmail.com';
+            navigator.clipboard.writeText(email).then(() => showToast('Support email copied')).catch(() => showToast('Failed'));
+        }
+
+        // quick link: copy code buttons inside pre tags (attach dynamically)
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('pre.code-block').forEach(pre => {
+                // create copy button (if not present)
+                if (!pre.querySelector('.copy-btn')) {
+                    const btn = document.createElement('button');
+                    btn.className = 'copy-btn';
+                    btn.title = 'Copy';
+                    btn.innerHTML = 'Copy';
+                    btn.onclick = () => { navigator.clipboard.writeText(pre.innerText).then(() => showToast('Copied')); };
+                    pre.style.position = 'relative';
+                    pre.appendChild(btn);
+                }
+            });
+
+            // Connect keyboard shortcut: "/" focuses search
+            window.addEventListener('keydown', (e) => {
+                if (e.key === '/' && document.activeElement.tagName.toLowerCase() !== 'input' && document.activeElement.tagName.toLowerCase() !== 'textarea') {
+                    e.preventDefault(); document.getElementById('globalSearch').focus();
+                }
+            });
+        });
+
+    </script>
+</body>
+
+</html>

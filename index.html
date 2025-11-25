@@ -2,369 +2,347 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DataLens | Cloud API & Data Platform</title>
     <link rel="icon" type="image/png" href="assets/DataLensIco.ico" />
 
-    <!-- Bootstrap / Icons / AOS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css" />
+    <!-- Bootstrap / Icons / Fonts -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
+
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
 
     <style>
-        .section {
-            display: none;
-            padding: 40px 20px;
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Poppins", sans-serif;
+            background: #f9fafb;
+            color: #1f2937;
         }
 
-        .active-section {
-            display: block;
-            animation: fadeIn 0.8s ease;
+        /* ==== HEADER ==== */
+        .navbar {
+            background: linear-gradient(180deg, rgba(184, 236, 201, 0.9), rgba(136, 236, 194, 0.8));
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
+        .navbar-brand {
+            font-weight: 700;
+            color: #000000 !important;
+            font-size: 1.4rem;
+        }
+
+        .nav-link {
+            color: #000000 !important;
+            margin-right: 1rem;
+            transition: 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #facc15 !important;
+        }
+
+        /* HERO MAIN */
+        .hero {
+            display: flex;
+            gap: 28px;
+            align-items: center;
+            padding: 28px;
+            background: linear-gradient(180deg, rgba(184, 236, 201, 0.9), rgba(255, 255, 255, 0.82));
+            border-radius: 16px;
+            flex-wrap: nowrap;
+        }
+
+        /* 🔥 MOBILE FIX */
+        @media (max-width: 768px) {
+            .hero {
+                flex-direction: column;
+                /* hero becomes vertical */
+                padding: 16px 14px;
+                /* reduce padding */
+                gap: 16px;
+                /* remove huge gaps */
+                text-align: center;
             }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
+            .hero-illustration {
+                order: -1;
+                /* move illustration to TOP */
+                max-width: 100%;
+                margin-bottom: 12px;
+            }
+
+            #home h1 {
+                font-size: 1.25rem;
+                /* better scaling for mobile */
+                padding: 0 10px;
+            }
+
+            .hero-copy p {
+                margin: 6px 0 !important;
+                /* remove unwanted padding/margins */
+                font-size: 0.95rem;
+            }
+
+            .cta-group {
+                margin-top: 10px !important;
+            }
+
+            .d-flex.gap-3 {
+                justify-content: center;
+                margin-top: 8px;
+            }
+
+            #home {
+                padding: 0 !important;
             }
         }
 
+        /* COPY */
+        .hero-copy {
+            flex: 1 1 300px;
+        }
+
+        .hero-illustration {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        /* ==== TOOL CARD ==== */
         .tool-card {
-            border: none;
+            background: linear-gradient(180deg, rgba(184, 236, 201, 0.9), rgba(255, 255, 255, 0.82));
             border-radius: 18px;
-            transition: all 0.3s;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-            background: white;
-            min-height: -webkit-fill-available;
+            padding: 28px;
+            transition: 0.25s;
+            border: 1px solid #eee;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+            height: 100%;
         }
 
         .tool-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-6px);
+            box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
         }
 
         .tool-icon {
-            font-size: 45px;
-            color: #0eb0e3;
-            margin-bottom: 15px;
+            font-size: 46px;
+            margin-bottom: 10px;
+            /* color: #1e3a8a; */
+            color: #000000;
         }
 
-       
-        /* API Tables */
-        table.api-table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
+        /* FOOTER */
+        footer {
+            background: linear-gradient(180deg, rgba(184, 236, 201, 0.9), rgba(136, 236, 194, 0.8));
+            color: #000000;
+            padding: 20px 20px;
+            text-align: center;
         }
 
-        table.api-table th,
-        table.api-table td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            word-wrap: break-word;
-        }
-
-        table.api-table th {
-            background-color: #f2f2f2;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2rem;
-            }
-
-            nav .navbar-nav {
-                text-align: center;
-            }
+        footer a {
+            color: #ff6600;
         }
     </style>
 </head>
 
 <body>
-    <div id="header"></div>
 
-    <!-- HOME -->
-    <section id="home" class="section active-section">
-        <div class="hero" data-aos="fade-up">
-            <h1>Explore • Analyze • Build</h1>
-            <p>DataLens is your all-in-one platform to test APIs, mock endpoints, explore datasets, and experiment in
-                sandboxed environments.</p>
-            <a href="dataExplorer.html" class="btn btn-light btn-lg shadow-sm px-4 py-2">Start with
-                Data Explorer...</a>
+    <!-- HEADER -->
+    <nav class="navbar navbar-expand-lg px-3 py-2">
+        <a class="navbar-brand d-flex align-items-center" href="#">
+            <img src="assets/DataLensLogo.png" alt="DataLens Logo" height="40">
+            <div class="d-flex flex-column">
+                <span>DataLens</span>
+                <small class="text-muted" style="font-size:10px;">Client-Side Data Platform</small>
+            </div>
+        </a>
+        <div class="ms-auto d-flex gap-2 align-items-center">
+            <button class="btn btn-sm btn-light" onclick="redirectToPage('index.html')" title="Home">
+                <i class="bi bi-house-door"></i>
+            </button>
+            <button class="btn btn-sm btn-light" id="helpBtn" title="Docs & Help" onclick="redirectToPage('docs.html')">
+                <i class="bi bi-question-circle"></i>
+            </button>
+        </div>
+    </nav>
+
+
+    <!-- HERO -->
+    <section id="home" class="container">
+        <div class="container mb-4">
+            <h1 class="text-center fw-bold py-2 mt-4">
+                Convert • Analyze • Discover | Search • Filter • Insight
+            </h1>
         </div>
 
-        <div class="container my-5 text-center">
-            <h2 class="fw-bold mb-4" data-aos="fade-up">All Tools in One Place</h2>
-            <div class="row g-4 justify-content-center">
-                <div class="col-md-3" data-aos="zoom-in">
-                    <div class="card tool-card text-center p-4">
-                        <i class="bi bi-lightning-fill tool-icon"></i>
-                        <h5>API Lens</h5>
-                        <p class="text-muted">Test, debug, and monitor APIs instantly.</p>
-                        <a href="#" onclick="showSection('apiLens')" class="btn btn-outline-primary btn-sm mt-2">Open
-                            Tool</a>
+        <div class="hero">
+            <div class="hero-copy">
+                <p>
+                    <b>DataLens is a lightweight, client-side data platform built for developers, analysts and product
+                        teams.</b> Explore datasets, test APIs, perform computations and interact with analytics—all
+                    inside your
+                    browser, with no backend and no complex code required.
+                </p>
+
+                <p style="color:var(--muted);margin-top:-4px;">
+                    Whether you're debugging API flows or profiling large datasets, DataLens gives you the speed,
+                    clarity and reliability to work smarter.
+                </p>
+
+                <div class="cta-group">
+                    <a class="btn btn-success btn-lg btn-lg-cta text-center" href="#"
+                        onclick="redirectToPage('data-explorer.html');return false;">Open Data Explorer</a>
+                </div>
+
+                <div class="d-flex gap-3 align-items-center mt-3" style="color:var(--muted);font-size:.95rem">
+                    <div class="d-flex align-items-center gap-2">
+                        <span
+                            style="width:10px;height:10px;background:var(--success);border-radius:50%;display:inline-block"></span>
+                        Realtime previews
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span
+                            style="width:10px;height:10px;background:var(--warn);border-radius:50%;display:inline-block"></span>
+                        Code-free workflows
                     </div>
                 </div>
-                <div class="col-md-3" data-aos="zoom-in" data-aos-delay="100">
-                    <div class="card tool-card text-center p-4">
-                        <i class="bi bi-tools tool-icon"></i>
-                        <h5>API Studio</h5>
-                        <p class="text-muted">Design, mock, & test your APIs.</p>
-                        <a href="#" onclick="showSection('apiStudio')" class="btn btn-outline-primary btn-sm mt-2">Open
-                            Tool</a>
-                    </div>
-                </div>
-                <div class="col-md-3" data-aos="zoom-in" data-aos-delay="200">
-                    <div class="card tool-card text-center p-4">
-                        <i class="bi bi-search tool-icon"></i>
-                        <h5>API Explorer</h5>
-                        <p class="text-muted">Browse endpoints, inspect headers & explore documentation.</p>
-                        <a href="#" onclick="showSection('apiExplorer')"
-                            class="btn btn-outline-primary btn-sm mt-2">Open Tool</a>
-                    </div>
-                </div>
-                <div class="col-md-3" data-aos="zoom-in" data-aos-delay="300">
-                    <div class="card tool-card text-center p-4">
-                        <i class="bi bi-puzzle-fill tool-icon"></i>
-                        <h5>API Sandbox</h5>
-                        <p class="text-muted">Experiment safely with isolated API testing environments.</p>
-                        <a href="#" onclick="showSection('apiSandbox')" class="btn btn-outline-primary btn-sm mt-2">Open
-                            Tool</a>
-                    </div>
-                </div>
             </div>
+
+            <div class="hero-illustration">
+                <svg viewBox="0 0 900 600" width="100%" preserveAspectRatio="xMidYMid meet">
+
+                    <!-- Soft background shapes -->
+                    <ellipse cx="450" cy="300" rx="360" ry="210" fill="#f4f8ff" />
+                    <ellipse cx="620" cy="200" rx="200" ry="130" fill="#fff4e8" />
+                    <ellipse cx="300" cy="380" rx="180" ry="110" fill="#fefcff" />
+
+                    <!-- Data Cluster (Big Data / Storage Nodes) -->
+                    <g transform="translate(120,140)">
+                        <rect width="180" height="220" rx="18" fill="#fff" stroke="#e4eaf3" stroke-width="2" />
+                        <rect x="20" y="30" width="140" height="25" rx="8" fill="#f2f7ff" />
+                        <rect x="20" y="75" width="140" height="18" rx="8" fill="#f8fbff" />
+                        <rect x="20" y="105" width="140" height="18" rx="8" fill="#f8fbff" />
+                        <rect x="20" y="135" width="140" height="18" rx="8" fill="#f8fbff" />
+                        <circle cx="90" cy="185" r="22" fill="#2563eb" opacity="0.12" />
+                    </g>
+
+                    <!-- Data Pipeline / Platform Blocks -->
+                    <g transform="translate(350,150)">
+                        <rect width="240" height="160" rx="18" fill="#fff" stroke="#e4eaf3" stroke-width="2" />
+                        <rect x="20" y="30" width="200" height="18" rx="8" fill="#f5f9ff" />
+                        <rect x="20" y="60" width="200" height="65" rx="10" fill="#eef6ff" />
+
+                        <!-- arrows representing pipeline -->
+                        <line x1="0" y1="80" x2="-50" y2="80" stroke="#2563eb" stroke-width="3"
+                            stroke-linecap="round" />
+                        <line x1="240" y1="80" x2="290" y2="80" stroke="#2563eb" stroke-width="3"
+                            stroke-linecap="round" />
+                    </g>
+
+                    <!-- Data Analysis Card (Charts + Graphs) -->
+                    <g transform="translate(250,330)">
+                        <rect width="420" height="220" rx="18" fill="#fff" stroke="#e4eaf3" stroke-width="2" />
+                        <rect x="22" y="32" width="260" height="20" rx="8" fill="#f4f9ff" />
+                        <rect x="22" y="70" width="200" height="12" rx="6" fill="#f8fcff" />
+
+                        <!-- Chart -->
+                        <rect x="22" y="100" width="360" height="100" rx="14" fill="#eef7ff" />
+                        <polyline points="55,180 120,140 190,160 250,130 325,155 380,120" stroke="#0f172a"
+                            stroke-width="3" fill="none" stroke-linecap="round" />
+                    </g>
+
+                    <!-- Dotted connectors (showing a unified data platform) -->
+                    <circle cx="300" cy="250" r="6" fill="#2563eb" />
+                    <circle cx="420" cy="240" r="6" fill="#2563eb" />
+                    <circle cx="540" cy="250" r="6" fill="#2563eb" />
+                    <circle cx="360" cy="380" r="6" fill="#2563eb" />
+                    <circle cx="520" cy="380" r="6" fill="#2563eb" />
+
+                </svg>
+            </div>
+
         </div>
     </section>
 
-    <!-- API LENS -->
-    <section id="apiLens" class="section container">
-        <h2 class="fw-bold text-center mb-4">API Lens</h2>
-        <div class="card p-4 shadow-sm">
-            <div class="row g-3">
-                <div class="col-md-3">
-                    <select id="apiLensMethod" class="form-select">
-                        <option>GET</option>
-                        <option>POST</option>
-                        <option>PUT</option>
-                        <option>DELETE</option>
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <input type="text" id="apiLensUrl" class="form-control" placeholder="Enter API URL">
-                </div>
-                <div class="col-md-3">
-                    <button class="btn btn-primary w-100" onclick="callApiLens()">Send</button>
+    <!-- TOOLS GRID -->
+    <section id="tools" class="container mb-4 text-center">
+        <h2 class="fw-bold my-4" data-aos="fade-up">All Workspace Tools</h2>
+        <div class="row g-4 justify-content-center">
+            <!-- Data Explorer -->
+            <div class="col-md-3" data-aos="zoom-in">
+                <div class="tool-card text-center">
+                    <i class="bi bi-bar-chart-line-fill tool-icon"></i>
+                    <h5>Data Explorer</h5>
+                    <p class="text-muted">Visualize structured, semi-structured and raw data instantly with smart
+                        auto-analysis.</p>
+                    <button onclick="redirectToPage('data-explorer.html')" class="btn btn-outline-dark btn-sm mt-2">Open
+                        Tool</button>
                 </div>
             </div>
-            <div class="mt-3">
-                <h6>Headers (JSON)</h6>
-                <textarea id="apiLensHeaders" class="form-control" rows="2"
-                    placeholder='{"Authorization":"Bearer ..."}'></textarea>
+            <!-- API Studio -->
+            <div class="col-md-3" data-aos="zoom-in" data-aos-delay="150">
+                <div class="tool-card text-center">
+                    <i class="bi bi-code-slash tool-icon"></i>
+                    <h5>API Studio</h5>
+                    <p class="text-muted">Test, inspect & analyze APIs with a clean interface and instant request
+                        analytics.</p>
+                    <button onclick="redirectToPage('api-studio.html')" class="btn btn-outline-dark btn-sm mt-2" disabled>Open
+                        Tool</button>
+                </div>
             </div>
-            <div class="mt-3">
-                <h6>Body (JSON for POST/PUT)</h6>
-                <textarea id="apiLensBody" class="form-control" rows="4" placeholder='{"key":"value"}'></textarea>
+            <!-- Computation Engine -->
+            <div class="col-md-3" data-aos="zoom-in" data-aos-delay="250">
+                <div class="tool-card text-center">
+                    <i class="bi bi-cpu-fill tool-icon"></i>
+                    <h5>Computation Engine</h5>
+                    <p class="text-muted">Execute transformations and complex logic seamlessly.</p>
+                    <button onclick="redirectToPage('computation-engine.html')"
+                        class="btn btn-outline-dark btn-sm mt-2">Open
+                        Tool</button>
+                </div>
             </div>
-            <hr>
-            <table class="api-table mt-3" id="apiLensOutput">
-                <thead>
-                    <tr>
-                        <th>Status</th>
-                        <th>Response</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+            <!-- No Query Workspace -->
+            <div class="col-md-3" data-aos="zoom-in" data-aos-delay="350">
+                <div class="tool-card text-center">
+                    <i class="bi bi-journal-text tool-icon"></i>
+                    <h5>No Query Workspace</h5>
+                    <p class="text-muted">Manage workflows without writing a single query.</p>
+                    <button onclick="redirectToPage('no-query-workspace.html')"
+                        class="btn btn-outline-dark btn-sm mt-2">Open
+                        Tool</button>
+                </div>
+            </div>
+            <!-- Schema Designer -->
+            <div class="col-md-3" data-aos="zoom-in" data-aos-delay="450">
+                <div class="tool-card text-center">
+                    <i class="bi bi-diagram-3-fill tool-icon"></i>
+                    <h5>Schema Designer</h5>
+                    <p class="text-muted">Design tables, relationships & generate SQL visually.</p>
+                    <button onclick="redirectToPage('schema-designer.html')" class="btn btn-outline-dark btn-sm mt-2">
+                        Open Tool
+                    </button>
+                </div>
+            </div>
+
         </div>
     </section>
 
-    <!-- API Studio -->
-    <section id="apiStudio" class="section container">
-        <h2 class="fw-bold text-center mb-4">API Studio (Mock API)</h2>
-        <div class="card p-4 shadow-sm">
-            <div class="row g-3">
-                <div class="col-md-3">
-                    <input type="text" id="studioEndpoint" class="form-control" placeholder="/mock-endpoint">
-                </div>
-                <div class="col-md-3">
-                    <select id="studioMethod" class="form-select">
-                        <option>GET</option>
-                        <option>POST</option>
-                        <option>PUT</option>
-                        <option>DELETE</option>
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <textarea id="studioResponse" class="form-control" rows="3"
-                        placeholder='{"message":"Hello"}'></textarea>
-                </div>
-            </div>
-            <div class="mt-3 text-end">
-                <button class="btn btn-success" onclick="addMockEndpoint()">Save Mock</button>
-            </div>
-            <hr>
-            <h6>Saved Mocks</h6>
-            <table class="api-table" id="studioOutput">
-                <thead>
-                    <tr>
-                        <th>Endpoint</th>
-                        <th>Method</th>
-                        <th>Response</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </section>
-
-    <!-- API Explorer -->
-    <section id="apiExplorer" class="section container">
-        <h2 class="fw-bold text-center mb-4">API Explorer</h2>
-        <div class="card p-4 shadow-sm text-center">
-            <input type="file" id="explorerFile" class="form-control w-50 mx-auto mb-3">
-            <table class="api-table mt-3" id="explorerOutput">
-                <thead></thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </section>
-
-    <!-- API Sandbox -->
-    <section id="apiSandbox" class="section container">
-        <h2 class="fw-bold text-center mb-4">API Sandbox</h2>
-        <div class="card p-4 shadow-sm text-center">
-            <p>Call Mock APIs or real APIs safely in sandbox.</p>
-            <input type="text" id="sandboxUrl" class="form-control w-50 mx-auto mb-2" placeholder="API URL">
-            <button class="btn btn-primary mb-2" onclick="callSandbox()">Call Sandbox</button>
-            <table class="api-table mt-3" id="sandboxOutput">
-                <thead>
-                    <tr>
-                        <th>Status</th>
-                        <th>Response</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </section>
-
-    <!-- Footer placeholder -->
-    <div id="footer"></div>
-
-    <!-- Guide Modal -->
-    <div id="guide"></div>
+    <!-- FOOTER -->
+    <footer>
+        <p>&copy; 2025 Qbitrix DataLens | Client-Side Data Platform Suite. All rights reserved. @Author <a class=""
+                href="https://sachinkumarhebri.vercel.app" target="_blank">Sachin kumar</a></p>
+    </footer>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
     <script>
-        AOS.init({ duration: 1000, once: true });
-
-        // Section Switcher
-        function showSection(id) {
-            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active-section'));
-            document.getElementById(id).classList.add('active-section');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // Mock storage
-        const mocks = [];
-
-        // API Lens
-        async function callApiLens() {
-            const url = document.getElementById('apiLensUrl').value;
-            const method = document.getElementById('apiLensMethod').value;
-            const headersText = document.getElementById('apiLensHeaders').value;
-            const bodyText = document.getElementById('apiLensBody').value;
-            const output = document.querySelector('#apiLensOutput tbody');
-            output.innerHTML = `<tr><td colspan="2">Loading...</td></tr>`;
-
-            let headers = {};
-            try { headers = JSON.parse(headersText || '{}'); } catch (e) { alert('Invalid JSON in headers'); return; }
-            let body = bodyText || undefined;
-            try { if (body && (method === 'POST' || method === 'PUT')) body = JSON.stringify(JSON.parse(bodyText)); }
-            catch (e) { alert('Invalid JSON body'); return; }
-
-            try {
-                const res = await fetch(url, { method, headers, body });
-                const text = await res.text();
-                output.innerHTML = `<tr><td>${res.status}</td><td><pre>${text}</pre></td></tr>`;
-            } catch (err) {
-                output.innerHTML = `<tr><td>Error</td><td>${err.message}</td></tr>`;
-            }
-        }
-
-        // API Studio
-        function addMockEndpoint() {
-            const endpoint = document.getElementById('studioEndpoint').value;
-            const method = document.getElementById('studioMethod').value;
-            let response = document.getElementById('studioResponse').value;
-            try { response = JSON.stringify(JSON.parse(response)); } catch (e) { alert('Invalid JSON'); return; }
-            mocks.push({ endpoint, method, response });
-            renderStudioMocks();
-        }
-        function renderStudioMocks() {
-            const tbody = document.querySelector('#studioOutput tbody');
-            tbody.innerHTML = '';
-            mocks.forEach(m => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${m.endpoint}</td><td>${m.method}</td><td><pre>${m.response}</pre></td>`;
-                tbody.appendChild(tr);
-            });
-        }
-
-        // API Explorer
-        document.getElementById('explorerFile').addEventListener('change', e => {
-            const file = e.target.files[0];
-            const output = document.querySelector('#explorerOutput');
-            output.querySelector('thead').innerHTML = '';
-            output.querySelector('tbody').innerHTML = '';
-            if (!file) return;
-
-            if (file.name.endsWith('.csv') || file.name.endsWith('.txt')) {
-                Papa.parse(file, {
-                    header: true,
-                    complete: function (results) { renderTable(results.data); }
-                });
-            } else if (file.name.endsWith('.json')) {
-                const reader = new FileReader();
-                reader.onload = () => { renderTable(JSON.parse(reader.result)); };
-                reader.readAsText(file);
-            } else { alert('Unsupported file type'); }
-
-            function renderTable(data) {
-                if (!data.length) return;
-                const thead = output.querySelector('thead');
-                const tbody = output.querySelector('tbody');
-                thead.innerHTML = '<tr>' + Object.keys(data[0]).map(k => `<th>${k}</th>`).join('') + '</tr>';
-                tbody.innerHTML = data.map(r => `<tr>${Object.values(r).map(v => `<td>${v}</td>`).join('')}</tr>`).join('');
-            }
-        });
-
-        // API Sandbox
-        async function callSandbox() {
-            const url = document.getElementById('sandboxUrl').value;
-            const output = document.querySelector('#sandboxOutput tbody');
-            output.innerHTML = `<tr><td colspan="2">Loading...</td></tr>`;
-            try {
-                const res = await fetch(url);
-                const text = await res.text();
-                output.innerHTML = `<tr><td>${res.status}</td><td><pre>${text}</pre></td></tr>`;
-            } catch (err) {
-                output.innerHTML = `<tr><td>Error</td><td>${err.message}</td></tr>`;
-            }
-        }
+        AOS.init({ duration: 900, once: true });
     </script>
-    <script src="app.js"></script>
+    <script src="/app.js"></script>
 </body>
 
 </html>

@@ -1,12 +1,10 @@
-// Load header and footer dynamically
-async function includeHTML() {
-    const header = await fetch('component/header.html');
-    document.getElementById('header').innerHTML = await header.text();
-
-    const footer = await fetch('component/footer.html');
-    document.getElementById('footer').innerHTML = await footer.text();
-
-    const guide = await fetch('component/guide.html');
-    document.getElementById('guide').innerHTML = await guide.text();
+function showSection(id) {
+    document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active-section"));
+    const current = document.getElementById(id);
+    if (current) current.classList.add("active-section");
+    window.scrollTo({ top: 0, behavior: "smooth" });
 }
-includeHTML();
+
+function redirectToPage(pageName) {
+    window.location.href = pageName;
+}
