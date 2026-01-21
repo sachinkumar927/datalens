@@ -1,0 +1,96 @@
+:root {
+    --primary: #2563eb;
+    --primary-soft: #eff6ff;
+    --secondary: #64748b;
+    --bg-body: #f8fafc;
+    --surface: #ffffff;
+    --border-color: #e2e8f0;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.glass-effect {
+    backdrop-filter: blur(10px);
+}
+
+/* Sticky Sidebar */
+.sticky-sidebar {
+    position: sticky;
+    top: 90px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+}
+
+/* UPLOADER - Keeping specific class styling */
+.uploader {
+    border: 2px dashed var(--border-color);
+    background: var(--bg-body);
+    transition: all 0.3s ease;
+    position: relative;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.uploader:hover {
+    border-color: var(--primary);
+    background: var(--primary-soft);
+}
+
+/* COLUMNS CHECKBOXES - Keeping specific class styling */
+.columns-checkboxes {
+    max-height: 350px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+/* Style the inputs inside columns-checkboxes nicely */
+.columns-checkboxes .form-check {
+    padding: 8px 10px 8px 2.5rem;
+    margin-bottom: 2px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.columns-checkboxes .form-check:hover {
+    background: var(--bg-body);
+}
+
+/* Buttons */
+.btn-white {
+    background: #fff;
+}
+
+.btn-white:hover {
+    background: var(--bg-body);
+}
+
+/* Table */
+.table-wrap {
+    max-height: 500px;
+    overflow: auto;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.table thead th {
+    background: var(--bg-body);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--text-muted);
+    padding: 12px;
+    white-space: nowrap;
+}
+
+.table tbody td {
+    padding: 10px 12px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+/* Filter & Order Containers */
+#filterContainer,
+#orderContainer {
+    margin-bottom: 8px;
+}

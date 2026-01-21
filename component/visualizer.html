@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DataLens — Data Visualization</title>
+  <link rel="icon" type="image/png" href="/assets/QbitrixDatalensLogo.ico" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/visualizer.css" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+
+  <header class="qd-header">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <img src="/assets/QbitrixDatalensLogo.png" class="qd-logo" alt="Logo"
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='block'" />
+        <div class="ms-2 lh-1">
+          <div class="fw-bold fs-5" style="letter-spacing: -0.5px;">QBITRIX <span class="text-primary">DataLens</span>
+          </div>
+          <small class="text-muted" style="font-size: 12px;">Unified Client-Side Data Platform</small>
+        </div>
+      </div>
+      <div>
+        <button class="qd-icon-btn" onclick="redirectToPage('/index.html')" title="Home"><i
+            class="bi bi-house"></i></button>
+        <button class="qd-icon-btn ms-2" onclick="redirectToPage('/component/docs.html')" title="Documentation"><i
+            class="bi bi-book"></i></button>
+      </div>
+    </div>
+  </header>
+
+  <div class="qd-toolbar">
+    <div class="qd-toolbar-left">
+      <h5 class="fw-bold m-0 text-dark"><i class=" text-primary fw-bold bi bi-grid-1x2-fill me-2"></i>Visualizer</h5>
+    </div>
+    <div class="qd-toolbar-right">
+      <button id="exportChartsBtn" class="btn btn-sm btn-primary-pro">
+        <i class=" text-primary fw-bold bi bi-download me-1"></i> Export All
+      </button>
+    </div>
+  </div>
+
+  <div class="app-wrapper">
+
+    <aside class="qd-sidebar">
+      <div class="sidebar-content">
+
+        <div class="sidebar-section mb-4">
+          <div class="section-header mb-2 d-flex justify-content-between">
+            <label class="section-title">Data Source</label>
+          </div>
+          <div id="uploader"
+            class="uploader mb-2 rounded d-flex align-items-center justify-content-center position-relative"
+            style="min-height: 140px; cursor: pointer;" tabindex="0">
+            <div class="text-center p-3">
+              <i class=" text-primary fw-bold bi bi-cloud-arrow-up-fill display-6 text-primary mb-2"></i>
+              <div class="fw-bold small">Click to Upload</div>
+              <div class="text-muted extra-small" style="font-size: 0.7rem;">CSV · XLSX · JSON</div>
+            </div>
+            <input id="fileInput" type="file" accept=".csv,.xlsx,.xls,.json"
+              style="position:absolute; inset:0; opacity:0; cursor:pointer;" />
+          </div>
+          <div id="fileInfo" class="text-center text-muted small mt-1 fst-italic">No file loaded</div>
+        </div>
+
+        <hr class="border-secondary-subtle my-4">
+
+        <div class="sidebar-section">
+          <div class="section-header mb-2">
+            <span class="section-title">Variable Inspector</span>
+          </div>
+          <p class="text-muted small mb-2" style="font-size: 13px;">Select a column to analyze distribution.</p>
+
+          <select id="fieldSelect" class="form-select form-select-sm mb-3 shadow-sm"></select>
+
+          <div id="fieldDetail" class="p-2 bg-light border rounded small mb-3 font-monospace text-break">
+            No field selected
+          </div>
+
+          <div class="bg-white border rounded p-2 shadow-sm" style="position:relative; min-height: 180px;">
+            <canvas id="fieldChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+    <section class="qd-visualizer">
+      <div class="editor-wrapper">
+
+        <div class="card-panel mb-4 shadow-sm border-0">
+          <div class="panel-header d-flex align-items-center bg-transparent border-bottom-0 pt-3 pb-0">
+            <h6 class="m-0 text-dark fw-bold"><i
+                class=" text-primary fw-bold bi bi-graph-up-arrow me-2 text-dark fw-bold"></i>Analytical
+              Dashboard
+            </h6>
+          </div>
+
+          <div class="panel-body">
+            <div class="row g-4" id="charts-container">
+
+              <div class="col-xl-6 col-lg-12">
+                <div class="card-panel h-100 p-3 shadow-none border">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <label class="fw-bold small mb-0 text-uppercase text-muted">Frequency Distribution</label>
+                    <select id="chart-col" class="form-select form-select-sm w-50 bg-light"></select>
+                  </div>
+                  <div class="chart-box"><canvas id="chart-canvas"></canvas></div>
+                  <button id="export-histogram" class="btn btn-sm btn-light w-100 mt-3 border">Save Image</button>
+                </div>
+              </div>
+
+              <div class="col-xl-6 col-lg-12">
+                <div class="card-panel h-100 p-3 shadow-none border">
+                  <div class="d-flex justify-content-between align-items-center mb-3 gap-2">
+                    <label class="fw-bold small mb-0 text-uppercase text-muted">Correlation (Scatter)</label>
+                    <div class="d-flex gap-1 w-50">
+                      <select id="scatter-x" class="form-select form-select-sm bg-light"></select>
+                      <select id="scatter-y" class="form-select form-select-sm bg-light"></select>
+                    </div>
+                  </div>
+                  <div class="chart-box"><canvas id="scatter-canvas"></canvas></div>
+                  <button id="export-scatter" class="btn btn-sm btn-light w-100 mt-3 border">Save Image</button>
+                </div>
+              </div>
+
+              <div class="col-xl-6 col-lg-12">
+                <div class="card-panel h-100 p-3 shadow-none border">
+                  <div class="d-flex justify-content-between align-items-center mb-3 gap-2">
+                    <label class="fw-bold small mb-0 text-uppercase text-muted">Categorical (Bar)</label>
+                    <div class="d-flex gap-1 w-50">
+                      <select id="bar-x" class="form-select form-select-sm bg-light">
+                        <option value="">X-axis</option>
+                      </select>
+                      <select id="bar-y" class="form-select form-select-sm bg-light">
+                        <option value="">Y-axis</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="chart-box"><canvas id="bar-canvas"></canvas></div>
+                  <button id="export-bar" class="btn btn-sm btn-light w-100 mt-3 border">Save Image</button>
+                </div>
+              </div>
+
+              <div class="col-xl-6 col-lg-12">
+                <div class="card-panel h-100 p-3 shadow-none border">
+                  <div class="d-flex justify-content-between align-items-center mb-3 gap-2">
+                    <label class="fw-bold small mb-0 text-uppercase text-muted">Trends (Line)</label>
+                    <div class="d-flex gap-1 w-50">
+                      <select id="line-x" class="form-select form-select-sm bg-light">
+                        <option value="">X-axis</option>
+                      </select>
+                      <select id="line-y" class="form-select form-select-sm bg-light">
+                        <option value="">Y-axis</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="chart-box"><canvas id="line-canvas"></canvas></div>
+                  <button id="export-line" class="btn btn-sm btn-light w-100 mt-3 border">Save Image</button>
+                </div>
+              </div>
+
+              <div class="col-xl-6 col-lg-12">
+                <div class="card-panel h-100 p-3 shadow-none border">
+                  <div class="d-flex justify-content-between align-items-center mb-3 gap-2">
+                    <label class="fw-bold small mb-0 text-uppercase text-muted">Part-to-Whole (Pie)</label>
+                    <div class="d-flex gap-1 w-50">
+                      <select id="pie-x" class="form-select form-select-sm bg-light">
+                        <option value="">Label</option>
+                      </select>
+                      <select id="pie-y" class="form-select form-select-sm bg-light">
+                        <option value="">Value</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="d-flex align-items-center justify-content-center" style="height: 240px;">
+                    <div style="position: relative; height: 100%; width: 100%; max-width: 240px;">
+                      <canvas id="pie-canvas"></canvas>
+                    </div>
+                  </div>
+                  <button id="export-pie" class="btn btn-sm btn-light w-100 mt-3 border">Save Image</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+  <footer class="qd-footer text-center">
+    <div class="container">
+      <p class="mb-1">© 2025 <strong>QBITRIX DataLens</strong>. All rights reserved.</p>
+      <small>Crafted by <a href="https://sachinkumarhebri.vercel.app" target="_blank"
+          class="text-decoration-none">Sachin Kumar</a></small>
+    </div>
+  </footer>
+
+  <script src="/js/visualization/visualization-state.js"></script>
+  <script src="/js/visualization/visualization-helpers.js"></script>
+  <script src="/js/visualization/visualization-charts.js"></script>
+  <script src="/js/visualization/visualization-file.js"></script>
+  <script src="/js/visualization/visualization-events.js"></script>
+  <script src="/js/visualization/visualization.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+
+</html>

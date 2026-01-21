@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>DataLens — Schema Designer</title>
+    <link rel="icon" href="/assets/QbitrixDatalensLogo.ico" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="/css/schemaDesigner.css" />
+    <link rel="stylesheet" href="/css/main.css" />
+
+    <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+    <script src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
+    <script src="https://unpkg.com/cytoscape-dagre/cytoscape-dagre.js"></script>
+</head>
+
+<body>
+
+    <header class="qd-header">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <img src="/assets/QbitrixDatalensLogo.png" class="qd-logo" alt="Logo"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='block'" />
+                <div class="ms-2 lh-1">
+                    <div class="fw-bold fs-5" style="letter-spacing: -0.5px;">QBITRIX <span
+                            class="text-primary">DataLens</span>
+                    </div>
+                    <small class="text-muted" style="font-size: 12px;">Unified Client-Side Data Platform</small>
+                </div>
+            </div>
+            <div>
+                <button class="qd-icon-btn" onclick="redirectToPage('/index.html')" title="Home"><i
+                        class="bi bi-house"></i></button>
+                <button class="qd-icon-btn ms-2" onclick="redirectToPage('/component/docs.html')"
+                    title="Documentation"><i
+                        class="fw-bold bi bi-book"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <div class="qd-toolbar">
+        <div class="qd-toolbar-left">
+            <h5 class="fw-bold m-0 text-dark">Schema Designer</h5>
+            <div class="qd-toolbar-group">
+                <button id="undoBtn" class="qd-tool-btn" title="Undo" disabled>
+                    <i
+                        class=" text-primary fw-bold text-primary fw-bold text-primary fw-boldbi bi-arrow-counterclockwise"></i>
+                </button>
+                <button id="redoBtn" class="qd-tool-btn" title="Redo" disabled>
+                    <i class=" text-primary fw-bold text-primary fw-bold text-primary fw-boldbi bi-arrow-clockwise"></i>
+                </button>
+            </div>
+            <div class="qd-separator"></div>
+            <span class="qd-status-text"><i
+                    class=" text-primary fw-bold text-primary fw-bold text-primary fw-boldbi bi-cloud-check"></i>
+                Ready</span>
+        </div>
+
+        <div class="qd-toolbar-right">
+            <button id="loadJsonBtn" class="btn btn-sm btn-outline-primary">
+                <i class=" text-primary fw-bold text-primary fw-bold text-primary fw-boldbi bi-upload me-1"></i> Load
+            </button>
+            <button id="saveJson" class="btn btn-sm btn-primary-pro">
+                <i class=" text-primary fw-bold text-primary fw-bold text-primary fw-boldbi bi-save me-1"></i> Save
+                Schema
+            </button>
+        </div>
+    </div>
+
+    <main class="container-fluid app-container">
+        <div class="row h-100 g-0">
+
+            <aside class="col-12 col-lg-2 qd-sidebar border-end">
+                <div class="panel-body sidebar-content">
+
+                    <div class="sidebar-section">
+                        <div class="section-header">
+                            <span class="section-title">TABLES</span>
+                            <span class="badge bg-light text-dark border">DB</span>
+                        </div>
+
+                        <div class="mb-3 px-2">
+                            <input id="tableSearch" class="form-control form-control-sm search-input"
+                                placeholder="Filter tables..." />
+                        </div>
+
+                        <div id="tablesList" class="list-group list-group-flush custom-list mb-3">
+                        </div>
+
+                        <div class="px-2 d-grid gap-2">
+                            <select id="templateSel" class="form-select form-select-sm">
+                                <option value="">+ Add Template</option>
+                                <option value="users">Users System</option>
+                                <option value="ecommerce">E-Commerce</option>
+                                <option value="blog">Blog / CMS</option>
+                            </select>
+                            <button id="applyTpl" class="btn btn-sm btn-outline-primary w-100">Apply Template</button>
+                        </div>
+                    </div>
+
+                    <hr class="sidebar-divider">
+
+                    <div class="sidebar-section">
+                        <div class="section-header">
+                            <span class="section-title">CONFIGURATION</span>
+                        </div>
+                        <div class="px-2">
+                            <label class="form-label x-small text-muted text-uppercase fw-bold">SQL Dialect</label>
+                            <select id="sqlDialect" class="form-select form-select-sm mb-3">
+                                <option value="postgres">PostgreSQL</option>
+                                <option value="mysql">MySQL</option>
+                                <option value="sqlite">SQLite</option>
+                            </select>
+
+                            <div class="d-flex gap-2">
+                                <button id="clearAll" class="btn btn-sm btn-danger-soft flex-grow-1">Reset</button>
+                                <button id="exportSqlQuick" class="btn btn-sm btn-success-soft flex-grow-1">SQL</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <section class="col-12 col-lg-4 qd-editor border-end bg-light-subtle">
+                <div class="editor-wrapper p-4">
+
+                    <div class="card-panel mb-4">
+                        <div class="panel-header d-flex justify-content-between align-items-center">
+                            <h6 class="m-0"><i
+                                    class=" text-primary fw-bold text-primary fw-bold text-primary fw-boldbi bi-table me-2"></i>Table
+                                Definition</h6>
+                            <div class="d-flex gap-1">
+                                <button id="cloneTableBtn" class="btn-icon-sm" title="Clone"><i
+                                        class="bi bi-copy"></i></button>
+                                <button id="deleteTableBtn" class="btn-icon-sm text-danger" title="Delete"><i
+                                        class="bi bi-trash"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="panel-body">
+                            <div class="form-group mb-3">
+                                <label class="form-label small fw-bold">Table Name</label>
+                                <div class="input-group input-group-sm">
+                                    <input id="tableName" class="form-control" placeholder="e.g. public.users" />
+                                    <button id="saveTableBtn" class="btn btn-primary">Update</button>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="form-label small fw-bold mb-0">Schema Columns</label>
+                                <button id="addColBtn" class="btn btn-xs btn-outline-primary">+ Add Column</button>
+                            </div>
+
+                            <div id="columnsEditor" class="columns-container">
+                            </div>
+
+                            <div class="mt-2 text-end">
+                                <button id="autoFKBtn" class="btn btn-xs btn-link text-decoration-none">
+                                    <i
+                                        class=" text-primary fw-bold text-primary fw-bold text-primary fw-boldbi bi-magic"></i>
+                                    Suggest Relationships
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-panel">
+                        <div class="panel-header">
+                            <h6 class="m-0"><i
+                                    class=" text-primary fw-bold text-primary fw-bold text-primary fw-boldbi bi-diagram-2 me-2"></i>Relationships
+                                (FK)</h6>
+                        </div>
+                        <div class="panel-body">
+                            <div class="relationship-builder">
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-5">
+                                        <label class="x-small muted">Source (One)</label>
+                                        <select id="colSourceTable" class="form-select form-select-sm mb-1"></select>
+                                        <select id="colSourceField" class="form-select form-select-sm"></select>
+                                    </div>
+                                    <div class="col-2 text-center pb-1">
+                                        <i
+                                            class=" text-primary fw-bold text-primary fw-bold text-primary fw-boldbi bi-arrow-right text-muted"></i>
+                                    </div>
+                                    <div class="col-5">
+                                        <label class="x-small muted">Target (Many)</label>
+                                        <select id="colTargetTable" class="form-select form-select-sm mb-1"></select>
+                                        <select id="colTargetField" class="form-select form-select-sm"></select>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end gap-2 mt-3">
+                                    <button id="removeRelBtn" class="btn btn-sm btn-outline-danger">Unlink</button>
+                                    <button id="addRelBtn" class="btn btn-sm btn-outline-success">Link Tables</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="col-12 col-lg-6 qd-visualizer bg-white">
+                <div class="visualizer-wrapper h-100 d-flex flex-column">
+
+                    <div class="viz-toolbar p-2 border-bottom d-flex justify-content-between align-items-center">
+                        <span class="fw-bold small ps-2">Entity Relationship Diagram</span>
+                        <div class="btn-group btn-group-sm">
+                            <button id="layoutBtn" class="btn btn-outline-secondary" title="Auto Layout"><i
+                                    class="bi bi-grid-3x3"></i></button>
+                            <button id="zoomFit" class="btn btn-outline-secondary" title="Fit to Screen"><i
+                                    class="bi bi-arrows-fullscreen"></i></button>
+                            <button id="exportPng" class="btn btn-outline-secondary" title="Export Image"><i
+                                    class="bi bi-camera"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="canvas-container flex-grow-1 position-relative bg-light" style="height: 300px;">
+                        <div id="erCanvas" class="w-100 h-100"></div>
+                    </div>
+
+                    <div class="sql-drawer border-top">
+                        <div class="d-flex justify-content-between align-items-center p-2 bg-light border-bottom">
+                            <span class="small fw-bold font-monospace"><i
+                                    class=" text-primary fw-bold text-primary fw-bold text-primary fw-boldbi bi-terminal me-1"></i>Generated
+                                DDL</span>
+                            <div class="d-flex gap-2">
+                                <button id="genSqlBtn" class="btn btn-xs btn-primary">Refresh</button>
+                                <button id="copySqlBtn" class="btn btn-xs btn-outline-secondary">Copy</button>
+                                <a id="downloadSql" class="btn btn-xs btn-outline-secondary"
+                                    download="schema.sql">Export .sql</a>
+                            </div>
+                        </div>
+                        <pre id="sqlArea" class="m-0 p-3"></pre>
+                    </div>
+
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="qd-footer text-center">
+        <div class="container">
+            <p class="mb-1">© 2025 <strong>QBITRIX DataLens</strong>. All rights reserved.</p>
+            <small>Crafted by <a href="https://sachinkumarhebri.vercel.app" target="_blank"
+                    class="text-decoration-none">Sachin Kumar</a></small>
+        </div>
+    </footer>
+
+    <template id="colRowTemplate">
+        <div class="col-row-item d-flex gap-2 align-items-center mb-2 p-2 border rounded bg-white shadow-sm">
+            <div class="drag-handle text-muted"><i
+                    class=" text-primary fw-bold text-primary fw-bold text-primary fw-boldbi bi-grip-vertical"></i>
+            </div>
+            <div class="flex-grow-1">
+                <input class="col-name form-control form-control-sm mb-1 font-monospace fw-bold"
+                    placeholder="column_name" />
+                <div class="d-flex gap-1">
+                    <select class="col-type form-select form-select-xs">
+                        <option>INTEGER</option>
+                        <option>BIGINT</option>
+                        <option>SERIAL</option>
+                        <option>VARCHAR(255)</option>
+                        <option>TEXT</option>
+                        <option>DATE</option>
+                        <option>TIMESTAMP</option>
+                        <option>BOOLEAN</option>
+                        <option>DECIMAL(10,2)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-options d-flex flex-column gap-1">
+                <div class="form-check form-check-inline m-0" title="Primary Key">
+                    <input type="checkbox" class="col-pk form-check-input" id="pk_rand">
+                    <label class="form-check-label x-small" for="pk_rand">PK</label>
+                </div>
+                <div class="form-check form-check-inline m-0" title="Allow Null">
+                    <input type="checkbox" class="col-null form-check-input" checked>
+                    <label class="form-check-label x-small">NN</label>
+                </div>
+                <div class="form-check form-check-inline m-0" title="Unique">
+                    <input type="checkbox" class="col-unique form-check-input">
+                    <label class="form-check-label x-small">UQ</label>
+                </div>
+            </div>
+
+            <div class="col-actions d-flex flex-column gap-1">
+                <button class="btn btn-xs btn-light border col-fk" title="Foreign Key">FK</button>
+                <button class="btn btn-xs btn-light border text-danger col-del" title="Remove">✕</button>
+            </div>
+        </div>
+    </template>
+
+    <script src="/js/schemaDesigner/app.js"></script>
+    <script src="/js/app.js"></script>
+</body>
+
+</html>

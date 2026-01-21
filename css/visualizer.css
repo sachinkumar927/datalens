@@ -1,0 +1,219 @@
+/* ===============================
+   THEME VARIABLES
+================================ */
+:root {
+    --qd-font-sans: 'Inter', sans-serif;
+    --qd-primary: #0078d4;
+    --qd-primary-hover: #106ebe;
+    --qd-surface-bg: #f8f9fa;
+    --qd-border: #e2e8f0;
+    --qd-text-muted: #57606a;
+
+    /* Dimensions for Sticky Calculations */
+    --header-height: 75px;
+    --toolbar-height: 60px;
+    --sticky-top-offset: calc(var(--header-height) + var(--toolbar-height));
+}
+
+/* ===============================
+   CORE LAYOUT
+================================ */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    /* We allow the MAIN WINDOW to scroll now */
+    overflow-y: auto;
+    font-family: var(--qd-font-sans);
+    background-color: var(--qd-surface-bg);
+}
+
+/* Sticky Header */
+.qd-header {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--qd-border);
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+}
+
+/* Wrapper expands with content */
+.app-wrapper {
+    display: flex;
+    flex: 1;
+    width: 100%;
+    position: relative;
+}
+
+/* ===============================
+   SIDEBAR (Sticky + Scrollable)
+================================ */
+.qd-sidebar {
+    width: 300px;
+    border-right: 1px solid var(--qd-border);
+    flex-shrink: 0;
+
+    /* MAGIC: Sticks to the left while you scroll the page */
+    position: sticky;
+    top: var(--sticky-top-offset);
+
+    /* Calculate height to fit exactly in the visible area */
+    height: calc(100vh - var(--sticky-top-offset));
+
+    /* Internal scroll if sidebar content is too long */
+    overflow-y: auto;
+}
+
+.sidebar-content {
+    padding: 1.5rem;
+}
+
+/* ===============================
+   VISUALIZER (Expands Height)
+================================ */
+.qd-visualizer {
+    flex: 1;
+    background-color: #f1f5f9;
+    padding-bottom: 2rem;
+    min-width: 0;
+
+    /* Enable vertical scrolling */
+    overflow-y: auto;
+
+    /* Critical: bound the height to viewport */
+    max-height: calc(100vh - 120px);
+    /* adjust offset for header/footer */
+}
+
+
+.editor-wrapper {
+    padding: 1.5rem;
+}
+
+/* ===============================
+   FOOTER (Normal Flow)
+================================ */
+.qd-footer {
+    margin-top: auto;
+    /* Pushes to bottom if content is short */
+    background: #fff;
+    border-top: 1px solid var(--qd-border);
+    width: 100%;
+    z-index: 10;
+    position: relative;
+    /* Just part of the flow */
+}
+
+/* ===============================
+   COMPONENTS & UTILS
+================================ */
+.section-title {
+    font-weight: 700;
+    font-size: 11px;
+    color: var(--qd-text-muted);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+.card-panel {
+    background: white;
+    border: 1px solid var(--qd-border);
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.panel-header {
+    background: #ffffff;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--qd-border);
+    border-radius: 8px 8px 0 0;
+}
+
+.panel-body {
+    padding: 16px;
+}
+
+/* Uploader */
+.uploader {
+    transition: 0.2s all ease;
+    border-color: #cbd5e1 !important;
+    border-style: dashed !important;
+    border-width: 2px !important;
+    background: #f8fafc;
+}
+
+.uploader:hover {
+    border-color: var(--qd-primary) !important;
+    background: #eff6ff !important;
+}
+
+.btn-primary-pro {
+    background: var(--qd-primary);
+    border: none;
+    color: white;
+}
+
+.btn-primary-pro:hover {
+    background: var(--qd-primary-hover);
+    color: white;
+}
+
+.chart-box {
+    position: relative;
+    height: 240px;
+    width: 100%;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* ===============================
+   RESPONSIVE (Mobile)
+================================ */
+@media (max-width: 991px) {
+
+    /* Reset Sticky behavior on mobile */
+    .qd-header,
+    .qd-toolbar,
+    .qd-sidebar {
+        position: relative;
+        top: auto;
+        height: auto;
+    }
+
+    .app-wrapper {
+        flex-direction: column;
+    }
+
+    .qd-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--qd-border);
+    }
+
+    /* Hide toolbar on mobile scroll to save space */
+    .qd-toolbar {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}

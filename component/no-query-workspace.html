@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DataLens — No Query Workspace</title>
+    <link rel="icon" type="image/png" href="/assets/QbitrixDatalensLogo.ico" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/noQueryWorkspace.css">
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+    <header class="qd-header">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <img src="/assets/QbitrixDatalensLogo.png" class="qd-logo" alt="Logo"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='block'" />
+                <div class="ms-2 lh-1">
+                    <div class="fw-bold fs-5" style="letter-spacing: -0.5px;">QBITRIX <span
+                            class="text-primary">DataLens</span>
+                    </div>
+                    <small class="text-muted" style="font-size: 12px;">Unified Client-Side Data Platform</small>
+                </div>
+            </div>
+            <div>
+                <button class="qd-icon-btn" onclick="redirectToPage('/index.html')" title="Home"><i
+                        class="bi bi-house"></i></button>
+                <button class="qd-icon-btn ms-2" onclick="redirectToPage('/component/docs.html')"
+                    title="Documentation"><i class="bi bi-book"></i></button>
+            </div>
+        </div>
+    </header>
+    <div class="qd-toolbar">
+        <div class="qd-toolbar-left">
+            <h5 class="fw-bold m-0 text-dark">No-Query Workspace</h5>
+        </div>
+        <div class="qd-toolbar-right">
+            <div class="d-flex gap-2">
+                <button id="resetQueryBtn" class="btn btn-outline-danger btn-sm" title="Reset Workspace">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+                </button>
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary btn-sm dropdown-toggle shadow-sm fw-medium px-3"
+                        data-bs-toggle="dropdown">
+                        <i class="bi bi-download me-1"></i> Export Data
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3">
+                        <li><a class="dropdown-item py-2" id="exportCSVBtn"><i class="bi bi-filetype-csv me-2"></i>CSV
+                                Format</a></li>
+                        <li><a class="dropdown-item py-2" id="exportExcelBtn"><i
+                                    class="bi bi-filetype-xlsx me-2"></i>Excel Workbook</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <main class="workspace-container container-fluid px-4 py-4">
+        <div class="row g-4">
+
+            <aside class="col-12 col-lg-3">
+                <div class="sticky-sidebar">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body p-4">
+                            <div
+                                class="section-label text-xs fw-bold text-uppercase text-muted mb-3 d-flex align-items-center gap-2">
+                                <i class="bi bi-database-fill-up text-primary"></i> Data Source
+                            </div>
+
+                            <div id="uploader" class="uploader mb-3 text-center rounded-3" tabindex="0">
+                                <div class="py-4">
+                                    <i class="bi bi-cloud-arrow-up display-6 text-primary mb-2"></i>
+                                    <div class="fw-bold text-dark">Click or Drop File</div>
+                                    <div class="text-muted small">CSV, XLSX, JSON</div>
+                                </div>
+                                <input id="fileInput" type="file" accept=".csv,.xlsx,.xls,.json"
+                                    style="position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer;" />
+                            </div>
+
+                            <div class="d-flex gap-2 mb-4">
+                                <button id="loadBtn"
+                                    class="btn btn-primary flex-grow-1 fw-medium shadow-sm btn-sm py-2">Upload</button>
+                                <button id="clearDB" class="btn btn-light border btn-sm text-danger"
+                                    title="Purge Local Cache"><i class="bi bi-trash3"></i></button>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="section-label small">Dataset Info</div>
+                                <div class="d-flex flex-wrap gap-2 mb-2">
+                                    <span id="rowCount" class="chip badge bg-light text-dark border fw-normal">0
+                                        rows</span>
+                                    <span id="colCount" class="chip badge bg-light text-dark border fw-normal">0
+                                        columns</span>
+                                </div>
+                                <div id="schemaSummary" class="text-muted small fst-italic">No active session</div>
+                            </div>
+
+                            <hr class="my-4 opacity-25" />
+
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-xs fw-bold text-uppercase text-muted">Visible Columns</span>
+                                <button id="selectAllCols" class="btn btn-sm p-0 btn-link text-decoration-none"
+                                    style="font-size: 11px;">Select All</button>
+                            </div>
+
+                            <div id="columnsContainer" class="columns-checkboxes shadow-inner bg-white rounded border">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <section class="col-12 col-lg-9">
+                <div class="card app-card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom py-3 px-4">
+                        <h6 class="m-0 fw-bold text-dark"><i class="bi bi-sliders me-2 text-primary"></i>No-Query
+                            Builder</h6>
+                    </div>
+                    <div class="card-body p-4 bg-light-subtle">
+                        <div class="row g-3">
+                            <div class="col-12 col-md-4">
+                                <label class="form-label fw-bold small text-dark"><i class="bi bi-filter"></i> Condition
+                                    Filters</label>
+                                <div id="filterContainer" class="d-grid gap-2"></div>
+                                <div class="mt-2 d-flex gap-2">
+                                    <button id="addFilterBtn" class="btn btn-sm btn-white border text-primary w-100">+
+                                        Add Filter</button>
+                                    <button id="clearFilters"
+                                        class="btn btn-sm btn-link text-muted text-decoration-none">Clear</button>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-4">
+                                <label class="form-label fw-bold small text-dark"><i class="bi bi-sort-down"></i>
+                                    Sorting</label>
+                                <div id="orderContainer" class="d-grid gap-2"></div>
+                                <div class="mt-2">
+                                    <button id="addOrderBtn" class="btn btn-sm btn-white border text-primary w-100">+
+                                        Add Order</button>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-4">
+                                <label class="form-label fw-bold small text-dark"><i class="bi bi-calculator"></i> Group
+                                    & Aggregation</label>
+                                <div class="bg-white p-3 rounded-3 border shadow-sm">
+                                    <select id="groupBySelect"
+                                        class="form-select form-select-sm mb-2 border-light-subtle bg-light"></select>
+                                    <div class="d-flex gap-2">
+                                        <select id="aggFuncSelect"
+                                            class="form-select form-select-sm border-light-subtle bg-light">
+                                            <option value="">(Function)</option>
+                                            <option value="sum">SUM</option>
+                                            <option value="avg">AVG</option>
+                                            <option value="count">COUNT</option>
+                                            <option value="max">MAX</option>
+                                            <option value="min">MIN</option>
+                                        </select>
+                                        <select id="aggFieldSelect"
+                                            class="form-select form-select-sm border-light-subtle bg-light">
+                                            <option value="">(Field)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-top d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3 flex-grow-1">
+                                <button id="runQueryBtn" class="btn btn-primary px-4 shadow-sm fw-medium">
+                                    <i class="bi bi-play-circle-fill me-2"></i> Execute Query
+                                </button>
+                                <div class="input-group input-group-sm" style="max-width: 250px;">
+                                    <span class="input-group-text bg-white border-end-0"><i
+                                            class="bi bi-search"></i></span>
+                                    <input id="globalSearch" class="form-control border-start-0 ps-0"
+                                        placeholder="Quick find in results..." />
+                                </div>
+                            </div>
+                            <div class="d-flex gap-3 align-items-center">
+                                <span class="small text-muted">Page Size</span>
+                                <select id="pageSizeSel" class="form-select form-select-sm" style="width:70px">
+                                    <option value="10" selected>10</option>
+                                    <option value="20">20</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card app-card overflow-hidden border-0 shadow-sm">
+                    <div
+                        class="card-header bg-white py-3 px-4 border-0 d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 fw-bold"><i class="bi bi-table me-2 text-primary"></i>Query Output</h6>
+                        <div class="text-muted" style="font-size: 0.8rem;">
+                            <span id="showingCount" class="fw-bold text-dark">0</span> rows returned in <span
+                                id="runtime" class="fw-bold text-dark">0 ms</span>
+                        </div>
+                    </div>
+
+                    <div class="px-0">
+                        <div class="table-wrap px-4">
+                            <table class="table table-hover align-middle mb-0" id="dataTable">
+                                <thead class="table-light sticky-top"></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+
+                        <div class="py-3 px-4 d-flex justify-content-between align-items-center border-top bg-white">
+                            <nav>
+                                <ul id="pagination" class="pagination pagination-sm mb-0"></ul>
+                            </nav>
+                            <div class="d-flex gap-2">
+                                <button id="downloadViewBtn" class="btn btn-sm btn-outline-success px-3">Download
+                                    View</button>
+                                <button id="copyBtn" class="btn btn-sm btn-outline-secondary px-3"
+                                    title="Copy to Clipboard">
+                                    <i class="bi bi-clipboard"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-light p-4 border-top">
+                        <h6 class="fw-bold mb-3"><i class="bi bi-bar-chart-line me-2 text-primary"></i>Visual Analytics
+                        </h6>
+                        <div class="chart-wrap shadow-sm bg-white p-3 rounded border">
+                            <canvas id="chartCanvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="qd-footer text-center">
+        <div class="container">
+            <p class="mb-1">© 2025 <strong>QBITRIX DataLens</strong>. All rights reserved.</p>
+            <small>Crafted by <a href="https://sachinkumarhebri.vercel.app" target="_blank"
+                    class="text-decoration-none">Sachin Kumar</a></small>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/noQueryWorkspace/state.js"></script>
+    <script src="/js/noQueryWorkspace/helpers.js"></script>
+    <script src="/js/noQueryWorkspace/ui.js"></script>
+    <script src="/js/noQueryWorkspace/query.js"></script>
+    <script src="/js/noQueryWorkspace/render.js"></script>
+    <script src="/js/noQueryWorkspace/file.js"></script>
+    <script src="/js/noQueryWorkspace/search.js"></script>
+    <script src="/js/noQueryWorkspace/export.js"></script>
+    <script src="/js/noQueryWorkspace/main.js"></script>
+</body>
+
+</html>

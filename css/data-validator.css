@@ -1,0 +1,134 @@
+/* --- Dashboard Layout --- */
+body {
+    background-color: #f1f5f9;
+    font-family: 'Poppins', sans-serif;
+    color: #334155;
+}
+
+/* --- Sidebar Control --- */
+@media (min-width: 992px) {
+    .sticky-sidebar {
+        position: sticky;
+        top: 75px;
+        height: calc(100vh - 100px);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .control-card {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .control-card .card-pro-body {
+        flex: 1;
+        overflow-y: auto;
+    }
+}
+
+/* --- Professional Cards --- */
+.card-pro {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.card-pro-header {
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid #f1f5f9;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-pro-body {
+    padding: 1.25rem;
+}
+
+/* --- Uploader Zone --- */
+.uploader-zone {
+    border: 2px dashed #cbd5e1;
+    background-color: #f8fafc;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.uploader-zone:hover {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
+}
+
+/* --- Result Table Styling --- */
+.table thead th {
+    background-color: #f8fafc !important;
+    color: #64748b;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    padding: 12px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.table tbody td {
+    font-size: 0.85rem;
+    padding: 10px 12px;
+    vertical-align: middle;
+}
+
+.sticky-top {
+    z-index: 10;
+}
+
+/* --- Rule Container --- */
+.rules-container {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+/* Scrollbars */
+.table-responsive::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+/* Custom Badge Colors */
+.badge-color-mismatch {
+    background-color: #f97316;
+    color: white;
+}
+
+/* Forces profiling data to stay in one row per column */
+#profilingWrap table th,
+#profilingWrap table td {
+    white-space: nowrap !important;
+    padding: 8px 15px !important;
+    vertical-align: middle;
+}
+
+/* Ensure the wrapper allows horizontal scrolling if content is wide */
+#profilingWrap {
+    overflow-x: auto;
+    display: block;
+    width: 100%;
+}
+
+/* Optional: Make sample values or long text slightly smaller to fit better */
+#profilingWrap td:last-child {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

@@ -1,0 +1,329 @@
+/* ===============================
+   THEME VARIABLES
+================================ */
+:root {
+    --qd-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --qd-font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+
+    /* Colors */
+    --qd-primary: #0078d4;
+    --qd-primary-hover: #106ebe;
+    --qd-surface-bg: #f8f9fa;
+    --qd-panel-bg: #ffffff;
+    --qd-border: #e0e0e0;
+    --qd-border-focus: #86b7fe;
+    --qd-text-main: #24292f;
+    --qd-text-muted: #57606a;
+
+    /* Layout */
+    --header-height: 48px;
+    --toolbar-height: 40px;
+    --footer-height: 30px;
+    --sidebar-width: 260px;
+}
+
+/* Utilities */
+.x-small {
+    font-size: 0.75rem;
+}
+
+.btn-xs {
+    padding: 0.1rem 0.4rem;
+    font-size: 0.75rem;
+    border-radius: 4px;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.font-monospace {
+    font-family: var(--qd-font-mono) !important;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #d0d7de;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #afb8c1;
+}
+
+/* ===============================
+   TOOLBAR
+================================ */
+.qd-toolbar {
+
+    height: var(--toolbar-height);
+    /* background: white; */
+    border-bottom: 1px solid var(--qd-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 30px 16px !important;
+    flex-shrink: 0;
+}
+
+.qd-toolbar-left,
+.qd-toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.qd-tool-btn {
+    border: 1px solid transparent;
+    background: transparent;
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: var(--qd-text-main);
+}
+
+.qd-tool-btn:disabled {
+    color: #d0d7de;
+    cursor: not-allowed;
+}
+
+.qd-tool-btn:not(:disabled):hover {
+    background: #f3f4f6;
+}
+
+.qd-separator {
+    width: 1px;
+    height: 16px;
+    background: var(--qd-border);
+}
+
+.qd-status-text {
+    font-size: 12px;
+    color: var(--qd-text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-primary-pro {
+    background: var(--qd-primary);
+    border: none;
+    color: white;
+    font-weight: 500;
+}
+
+.btn-primary-pro:hover {
+    background: var(--qd-primary-hover);
+}
+
+/* ===============================
+   MAIN LAYOUT (APP CONTAINER)
+================================ */
+.app-container {
+    flex-grow: 1;
+    overflow: hidden;
+    padding: 0 !important;
+}
+
+/* ===============================
+   SIDEBAR (LEFT)
+================================ */
+.qd-sidebar {
+    background: #f6f8fa;
+    height: 100%;
+    overflow-y: auto;
+    font-size: 13px;
+}
+
+.sidebar-content {
+    padding: 16px 0;
+}
+
+.sidebar-section {
+    margin-bottom: 24px;
+}
+
+.section-header {
+    padding: 0 16px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.section-title {
+    font-weight: 600;
+    font-size: 11px;
+    color: var(--qd-text-muted);
+    letter-spacing: 0.5px;
+}
+
+/* Table List Items */
+#tablesList .list-group-item {
+    background: transparent;
+    border: none;
+    padding: 6px 16px;
+    color: var(--qd-text-main);
+    border-left: 3px solid transparent;
+    cursor: pointer;
+}
+
+#tablesList .list-group-item:hover {
+    /* background: #eaHgf; */
+    color: var(--qd-primary);
+}
+
+#tablesList .list-group-item.active {
+    background: #eef5fc;
+    color: var(--qd-primary);
+    border-left-color: var(--qd-primary);
+    font-weight: 500;
+}
+
+/* ===============================
+   EDITOR (MIDDLE)
+================================ */
+.qd-editor {
+    height: 100%;
+    overflow-y: auto;
+    background: #ffffff;
+}
+
+.card-panel {
+    background: white;
+    border: 1px solid var(--qd-border);
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.panel-header {
+    background: #fbfcfd;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--qd-border);
+    border-radius: 6px 6px 0 0;
+}
+
+.panel-body {
+    padding: 16px;
+}
+
+.btn-icon-sm {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 2px 6px;
+    transition: 0.2s;
+}
+
+.btn-icon-sm:hover {
+    background: #f1f1f1;
+    border-color: #ddd;
+}
+
+/* Column Editor styling */
+.columns-container {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 4px;
+    background: #fafafa;
+    border: 1px solid var(--qd-border);
+    border-radius: 4px;
+}
+
+/* The Template Row */
+.col-row-item {
+    transition: 0.2s;
+    border: 1px solid #eee !important;
+}
+
+.col-row-item:hover {
+    border-color: #ccc !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* ===============================
+   VISUALIZER (RIGHT)
+================================ */
+.qd-visualizer {
+    height: 100%;
+    padding: 0 !important;
+    display: flex;
+    flex-direction: column;
+}
+
+.viz-toolbar {
+    height: 40px;
+    background: white;
+    flex-shrink: 0;
+}
+
+.canvas-container {
+    background-color: #f4f4f4;
+    background-image: radial-gradient(#d1d1d1 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.sql-drawer {
+    height: 30%;
+    background: white;
+    display: flex;
+    flex-direction: column;
+}
+
+#sqlArea {
+    flex-grow: 1;
+    overflow: auto;
+    background: #1e1e1e;
+    color: #ce9178;
+    /* VS Code String color ish */
+    font-family: var(--qd-font-mono);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* ===============================
+   RESPONSIVE OVERRIDES
+================================ */
+@media (max-width: 991px) {
+
+    /* Break "App Layout" on mobile and scroll normally */
+    body {
+        height: auto;
+        overflow: auto;
+    }
+
+    .app-container {
+        height: auto;
+        overflow: visible;
+        padding: 16px !important;
+    }
+
+    .row.h-100 {
+        height: auto !important;
+    }
+
+    .qd-sidebar,
+    .qd-editor,
+    .qd-visualizer {
+        height: auto !important;
+        overflow: visible;
+        margin-bottom: 20px;
+        border-right: none !important;
+    }
+
+    #erCanvas {
+        height: 400px;
+    }
+
+    .sql-drawer {
+        height: auto;
+        min-height: 200px;
+    }
+}
