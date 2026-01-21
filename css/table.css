@@ -1,0 +1,104 @@
+/* ===============================
+   TABLE STYLES – COMPLETE
+================================ */
+
+/* Responsive wrapper */
+.table-responsive {
+    font-size: 0.95rem;
+}
+
+/* ===============================
+   TABLE HEADER
+================================ */
+.table thead th {
+    background-color: #f1f5f9;
+    /* Header background */
+    color: #0f172a;
+    font-weight: 600;
+    white-space: nowrap;
+    border-bottom: 2px solid #dee2e6;
+    vertical-align: middle;
+}
+
+/* ===============================
+   TABLE BODY
+================================ */
+.table tbody td {
+    vertical-align: middle;
+}
+
+/* Zebra striping */
+.table tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+.table tbody tr:nth-child(even) {
+    background-color: #f8fafc;
+}
+
+/* Hover effect */
+.table tbody tr:hover {
+    background-color: #e7f1ff;
+    /* Soft Azure hover */
+    transition: background-color 0.15s ease-in-out;
+}
+
+/* Prevent cell background override on hover */
+.table tbody tr:hover td {
+    background-color: transparent;
+}
+
+/* ===============================
+   TEXT WRAPPING / ELLIPSIS
+================================ */
+td.wrap {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 320px;
+}
+
+/* ===============================
+   TABLE BORDERS
+================================ */
+.table-bordered th,
+.table-bordered td {
+    border-color: #dee2e6;
+}
+
+/* Compact tables */
+.table-sm th,
+.table-sm td {
+    padding: 0.35rem 0.5rem;
+}
+
+/* ===============================
+   BADGES IN TABLE
+================================ */
+.badge-type {
+    font-size: 0.8rem;
+}
+
+/* Custom issue badges */
+.badge-color-mismatch {
+    background-color: rgb(253, 103, 12);
+    color: #fff;
+}
+
+.badge-color-invalid {
+    background-color: rgb(253, 12, 12);
+    color: #fff;
+}
+
+/* ===============================
+   PAGINATION / SMALL SCREENS
+================================ */
+@media (max-width: 576px) {
+    .table-responsive {
+        font-size: 0.85rem;
+    }
+
+    td.wrap {
+        max-width: 200px;
+    }
+}

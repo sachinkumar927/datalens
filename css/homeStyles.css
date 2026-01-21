@@ -1,0 +1,213 @@
+:root {
+  --az-bg: #f5f7fb;
+  --az-surface: #ffffff;
+  --az-border: #e5e7eb;
+  --az-text: #0f172a;
+  --az-muted: #6b7280;
+  --az-primary: #0078d4;
+  --radius: 8px;
+}
+
+
+/* MAIN SURFACE */
+.az-surface {
+  padding: 24px;
+}
+
+/* =========================
+   AZURE HERO – ADVANCED UI
+   ========================= */
+
+.az-hero-animated {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg,
+      rgba(0, 120, 212, 0.08),
+      rgba(255, 255, 255, 0.9));
+  border: 1px solid var(--az-border);
+  border-radius: 8px;
+}
+
+/* Background Layer */
+.az-hero-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Floating orbs (Azure-style soft visuals) */
+.az-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0.35;
+  animation: float 14s ease-in-out infinite;
+}
+
+.az-orb-1 {
+  width: 220px;
+  height: 220px;
+  background: #0078d4;
+  top: -60px;
+  left: -60px;
+}
+
+.az-orb-2 {
+  width: 260px;
+  height: 260px;
+  background: #00b7c3;
+  bottom: -80px;
+  right: -80px;
+  animation-delay: 4s;
+}
+
+/* Subtle grid overlay (Azure Portal feel) */
+.az-grid-overlay {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.25;
+}
+
+/* Content */
+.az-hero-content {
+  position: relative;
+  z-index: 1;
+  padding: 32px;
+}
+
+.az-hero-content h1 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+/* Feature row */
+.az-hero-features {
+  display: flex;
+  gap: 18px;
+  margin: 16px 0;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--az-muted);
+}
+
+.az-feature {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Status dots */
+.az-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+
+
+/* Floating animation */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(18px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .az-hero-content {
+    text-align: center;
+    padding: 22px;
+  }
+
+  .az-hero-features {
+    justify-content: center;
+  }
+}
+
+
+/* HERO */
+.az-hero {
+  background: var(--az-surface);
+  border: 1px solid var(--az-border);
+  border-radius: 6px;
+  padding: 32px;
+  margin-bottom: 32px;
+}
+
+.az-hero h1 {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.az-muted {
+  color: var(--az-muted);
+}
+
+.az-primary-btn {
+  margin-top: 16px;
+}
+
+/* SECTIONS */
+.az-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+/* CARDS */
+.az-card {
+  background: var(--az-surface);
+  border: 1px solid var(--az-border);
+  border-radius: 6px;
+  padding: 20px;
+  height: 100%;
+}
+
+.az-card-icon {
+  font-size: 28px;
+  color: var(--az-primary);
+  margin-bottom: 10px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 992px) {
+  .az-surface {
+    padding: 16px;
+  }
+
+  .az-hero {
+    padding: 20px;
+  }
+
+  .az-hero h1 {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .az-header {
+    padding: 0 10px;
+  }
+
+  .az-hero {
+    text-align: center;
+  }
+
+  .az-primary-btn {
+    width: 100%;
+  }
+}
+

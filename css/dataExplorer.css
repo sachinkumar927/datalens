@@ -1,0 +1,106 @@
+:root {
+  --brand-primary: #2563eb;
+  --brand-secondary: #64748b;
+  --bg-light: #f8fafc;
+  --card-border: #e2e8f0;
+}
+
+/* Dashboard Components */
+.card {
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background: #fff;
+  margin-bottom: 1.5rem;
+}
+
+.uploader {
+  border: 2px dashed #cbd5e1;
+  border-radius: 10px;
+  background: #fdfdfd;
+  transition: border-color 0.3s;
+  position: relative;
+  padding: 20px 10px;
+}
+
+.uploader:hover {
+  border-color: var(--brand-primary);
+}
+
+.info-badge {
+  background: #f1f5f9;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.columns-checkboxes {
+  max-height: 250px;
+  overflow-y: auto;
+  padding: 10px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+/* Professional Scroll Container */
+.table-wrap {
+  position: relative;
+  max-height: 500px;
+  /* Limits height for vertical scroll */
+  overflow: auto;
+  /* Enables both horizontal and vertical scroll */
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+/* Sticky Header Logic */
+#dataTable thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #f8fafc;
+  /* Matches table-light */
+  border-bottom: 2px solid #e2e8f0;
+  white-space: nowrap;
+  /* Prevents header text from wrapping */
+}
+
+/* Column data prevents wrapping to force horizontal scroll if many columns exist */
+#dataTable tbody td {
+  white-space: nowrap;
+  padding: 8px 12px;
+}
+
+.filter-block {
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.btn-success {
+  background-color: #10b981;
+  border: none;
+}
+
+.btn-primary {
+  background-color: var(--brand-primary);
+  border: none;
+}
+
+
+/* Custom Scrollbar for Pro look */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}

@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>DataLens — Professional API Studio</title>
+
+    <link rel="icon" href="/assets/QbitrixDatalensLogo.ico" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono&display=swap"
+        rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <link href="/css/api-studio.css" rel="stylesheet" />
+    <link href="/css/main.css" rel="stylesheet" />
+
+</head>
+
+<body>
+    <header class="qd-header">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <img src="/assets/QbitrixDatalensLogo.png" class="qd-logo" alt="Logo"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='block'" />
+                <div class="ms-2 lh-1">
+                    <div class="fw-bold fs-5" style="letter-spacing: -0.5px;">QBITRIX <span
+                            class="text-primary">DataLens</span>
+                    </div>
+                    <small class="text-muted" style="font-size: 12px;">Unified Client-Side Data Platform</small>
+                </div>
+            </div>
+            <div>
+                <button class="qd-icon-btn" onclick="redirectToPage('/index.html')" title="Home"><i
+                        class="bi bi-house"></i></button>
+                <button class="qd-icon-btn ms-2" onclick="redirectToPage('/component/docs.html')"
+                    title="Documentation"><i class="bi bi-book"></i></button>
+            </div>
+        </div>
+    </header>
+    <div class="qd-toolbar">
+        <div class="qd-toolbar-left">
+            <h5 class="fw-bold m-0 text-dark">API Studio</h5>
+        </div>
+        <div class="qd-toolbar-right">
+            <button id="downloadCsv" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-filetype-csv me-1"></i> CSV
+            </button>
+            <button id="downloadExcel" class="btn btn-sm btn-outline-success">
+                <i class="bi bi-file-earmark-excel me-1"></i> Excel
+            </button>
+            <button id="clearBtn" class="btn btn-outline-danger btn-sm">Reset All</button>
+        </div>
+    </div>
+    <div class="app-container">
+        <aside id="sidebarHistory">
+            <div class="history-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-clock-history me-2"></i>History</span>
+                <button id="clearHistory"
+                    class="btn btn-link btn-sm text-danger p-0 text-decoration-none">Clear</button>
+            </div>
+            <ul id="historyList" class="list-group list-group-flush"></ul>
+        </aside>
+
+        <main>
+            <div class="card shadow-sm mb-4">
+                <div class="card-body p-3">
+                    <form id="requestForm">
+                        <div class="input-group-custom mb-3">
+                            <select id="method" class="form-select" onchange="updateMethodColor(this)">
+                                <option>GET</option>
+                                <option>POST</option>
+                                <option>PUT</option>
+                                <option>PATCH</option>
+                                <option>DELETE</option>
+                            </select>
+                            <input id="urlInput" type="text" class="form-control"
+                                placeholder="https://api.example.com/v1/resource">
+                            <button id="sendBtn" class="btn btn-primary px-4">
+                                <strong>SEND</strong>
+                                <span id="sendSpinner" class="spinner-border spinner-border-sm d-none"></span>
+                            </button>
+                        </div>
+                    </form>
+
+                    <ul class="nav nav-tabs mb-3">
+                        <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab"
+                                data-bs-target="#headersTab">Headers</button></li>
+                        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab"
+                                data-bs-target="#paramsTab">Params</button></li>
+                        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab"
+                                data-bs-target="#bodyTab">Body</button></li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <div id="headersTab" class="tab-pane fade show active">
+                            <div id="headersEditor" class="editor"></div>
+                            <button class="btn btn-sm btn-light mt-2 border" onclick="addRow('headersEditor')">
+                                <i class="bi bi-plus"></i> Add Header
+                            </button>
+                        </div>
+                        <div id="paramsTab" class="tab-pane fade">
+                            <div id="paramsEditor" class="editor"></div>
+                            <button class="btn btn-sm btn-light mt-2 border" onclick="addRow('paramsEditor')">
+                                <i class="bi bi-plus"></i> Add Param
+                            </button>
+                        </div>
+                        <div id="bodyTab" class="tab-pane fade">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <label class="small fw-medium">Content Type:</label>
+                                <select id="bodyMode" class="form-select form-select-sm w-auto">
+                                    <option value="raw">Raw</option>
+                                    <option value="json">JSON (application/json)</option>
+                                </select>
+                            </div>
+                            <textarea id="bodyInput" class="form-control" rows="5"
+                                placeholder="Enter request body..."></textarea>
+                            <div id="bodyError" class="form-text text-danger d-none"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">JSON Extraction Key</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-white"><i class="bi bi-braces"></i></span>
+                        <input type="text" id="jsonKeyInput" class="form-control" placeholder="e.g. data" value="data">
+                    </div>
+                </div>
+                <div class="col-md-9 d-flex align-items-end justify-content-end mt-3 mt-md-0">
+                    <button id="openAnalytics" class="btn btn-outline-primary w-md-auto text-end">
+                        <i class="bi bi-graph-up me-2"></i>Open Analytics
+                    </button>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <strong class="text-uppercase small tracking-wider">Response</strong>
+                    <div class="small">
+                        <span id="statusLabel" class="badge bg-light text-dark border">-</span>
+                        <span id="timeLabel" class="ms-2 text-muted">-</span>
+                        <span id="sizeLabel" class="ms-2 text-muted">-</span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="nav nav-tabs px-3">
+                        <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab"
+                                data-bs-target="#rawResp">Raw</button></li>
+                        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab"
+                                data-bs-target="#jsonResp">Preview</button></li>
+                        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab"
+                                data-bs-target="#headersResp">Headers</button></li>
+                    </ul>
+                    <div class="tab-content p-3">
+                        <div id="rawResp" class="tab-pane fade show active">
+                            <pre id="rawOutput" class="mb-0"><code id="rawCode"></code></pre>
+                        </div>
+                        <div id="jsonResp" class="tab-pane fade">
+                            <pre id="jsonOutput" class="mb-0"></pre>
+                        </div>
+                        <div id="headersResp" class="tab-pane fade">
+                            <pre id="headersOutput" class="mb-0 text-dark bg-light"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="analyticsCard" class="card shadow-sm d-none mt-4">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 fw-bold">Analytics Studio</h6>
+                    <button id="closeAnalytics" class="btn-close"></button>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label small">Data Source</label>
+                            <select id="datasetSource" class="form-select form-select-sm">
+                                <option value="dataField">Response Key</option>
+                                <option value="root">Root Array</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small">Dimension (Labels)</label>
+                            <input id="dimField" class="form-control form-control-sm" placeholder="e.g. name">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small">Metric (Values)</label>
+                            <input id="metricField" class="form-control form-control-sm" placeholder="e.g. price">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small">Chart Type</label>
+                            <select id="chartType" class="form-select form-select-sm">
+                                <option value="bar">Bar Chart</option>
+                                <option value="line">Line Chart</option>
+                                <option value="pie">Pie Chart</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-3 text-end">
+                        <button id="renderChart" class="btn btn-primary btn-sm px-4">Generate Visualization</button>
+                    </div>
+                    <div id="analyticsSummary" class="mt-3 small"></div>
+                    <div class="mt-4 p-2 bg-light rounded">
+                        <canvas id="analyticsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="qd-footer text-center">
+        <div class="container">
+            <p class="mb-1">© 2025 <strong>QBITRIX DataLens</strong>. All rights reserved.</p>
+            <small>Crafted by <a href="https://sachinkumarhebri.vercel.app" target="_blank"
+                    class="text-decoration-none">Sachin Kumar</a></small>
+        </div>
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/apiStudio/state.js"></script>
+    <script src="/js/apiStudio/utils.js"></script>
+    <script src="/js/apiStudio/history.js"></script>
+    <script src="/js/apiStudio/export.js"></script>
+    <script src="/js/apiStudio/analytics.js"></script>
+    <script src="/js/apiStudio/request.js"></script>
+    <script>
+        // Visual enhancement for Method Selector
+        function updateMethodColor(select) {
+            const colors = {
+                'GET': 'var(--method-get)',
+                'POST': 'var(--method-post)',
+                'PUT': 'var(--method-put)',
+                'DELETE': 'var(--method-delete)',
+                'PATCH': 'var(--method-patch)'
+            };
+            select.style.color = colors[select.value] || 'var(--text-main)';
+        }
+
+        // Init method color
+        document.addEventListener('DOMContentLoaded', () => {
+            updateMethodColor(document.getElementById('method'));
+
+            // Mock function for "Add Row" if your api-studio.js is missing it
+            if (typeof window.addRow === 'undefined') {
+                window.addRow = function (containerId) {
+                    const container = document.getElementById(containerId);
+                    const div = document.createElement('div');
+                    div.className = 'editor-row';
+                    div.innerHTML = `
+                        <input type="text" class="editor-input" placeholder="Key">
+                        <input type="text" class="editor-input" placeholder="Value">
+                        <button class="btn btn-sm btn-outline-danger" onclick="this.parentElement.remove()">&times;</button>
+                    `;
+                    container.appendChild(div);
+                }
+                // Add initial rows
+                addRow('paramsEditor');
+                addRow('headersEditor');
+            }
+        });
+    </script>
+</body>
+
+</html>
