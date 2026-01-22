@@ -197,3 +197,14 @@
      .offcanvas {
          width: 300px !important;
      }
+
+     @media (max-width: 500px) {
+         .mobile small {
+             display: none;
+         }
+
+         .mobile div {
+             font-size: 18px !important;
+         }
+
+     }
